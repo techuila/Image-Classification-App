@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "664848723355",
+    "firebase_url": "https://ibato-4d427.firebaseio.com",
+    "project_id": "ibato-4d427",
+    "storage_bucket": "ibato-4d427.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:664848723355:android:873152051d4eedbdc9053e",
+        "android_client_info": {
+          "package_name": "com.example.ibato"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "664848723355-pthoo5cnrnhl1nacbr444oo3q5tverht.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ibato",
+            "certificate_hash": "f7b456fc23635171b8ff00875068bd8fbfe5a23e"
+          }
+        },
+        {
+          "client_id": "664848723355-ks1bl5hr7a4rljif9pfm4r1cvnd9rbnd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRvf2TkIEBRiRZvTjULLnJ86KZ_lOb3Dk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "664848723355-ks1bl5hr7a4rljif9pfm4r1cvnd9rbnd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">iBato</string>
+    <string name="username">Username</string>
+    <string name="name">Name</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="loading">Loading...</string>
+    <string name="logo_description">App Logo</string>
+    <string name="title_activity_login2">Sign in</string>
+    <string name="prompt_email">Email</string>
+    <string name="change_password">Change Password</string>
+    <string name="prompt_phone">Phone Number</string>
+    <string name="prompt_address">Address</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_new_password">New Password</string>
+    <string name="prompt_current_password">Current Password</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="btn_back"><![CDATA[← Already registered? Sign in now!]]></string>
+
+    <string name="picture">Picture</string>
+    <string name="description_info">Info</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_gallery">Gallery</string>
+    <string name="nav_explore">Gallery</string>
+    <string name="nav_me">Me</string>
+    <string name="request_permission">This sample needs camera permission.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="intro_message">intro message</string>
+
+    <string name="change_photo">Change Photo</string>
+
+    <!-- fragment tags -->
+    <string name="fragment_camera2">Camera2</string>
+    <string name="fragment_view_stickers">View Stickers</string>
+
+    <!-- Navigation Drawer -->
+    <string name="sample_header_name">Jose Mari Chan</string>
+    <string name="sample_header_email">josemari_chan@gmail.com</string>
+    <string name="profile">Profile</string>
+    <string name="history">History</string>
+    <string name="logout">Logout</string>
+</resources>

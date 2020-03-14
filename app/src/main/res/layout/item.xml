@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="20dp"
+        android:layout_margin="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="450dp">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/cam_content_inset_primary"
+                android:id="@+id/deleteBtn"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/cam_widget_margin_right"
+                android:layout_marginTop="@dimen/stillshot_widget_margin_top"
+                android:background="@drawable/circle_opaque2"
+                android:animateLayoutChanges="true"
+                android:translationZ="1dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/x_white_border"
+                    android:layout_centerInParent="true"/>
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/image"
+                android:src="@drawable/brochure"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="350dp" />
+
+            <TextView
+                android:id="@+id/title"
+                android:textColor="#262626"
+                android:layout_below="@id/image"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="16dp"
+                android:text="Brochure"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/desc"
+                android:layout_below="@id/title"
+                android:layout_marginTop="3dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:maxLines="3"
+                android:drawablePadding="10dp"
+                android:ellipsize="end"
+                android:text="Description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
