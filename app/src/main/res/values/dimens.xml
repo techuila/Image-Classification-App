@@ -29,4 +29,7 @@
     <dimen name="stillshot_widget_margin_top">10dp</dimen>
     <dimen name="stillshot_widget_margin_bottom">4dp</dimen>
 
+    <dimen name="isUserHasFeedback">60dp</dimen>
+    <dimen name="isUserHasNoFeedback">12dp</dimen>
+
 </resources>

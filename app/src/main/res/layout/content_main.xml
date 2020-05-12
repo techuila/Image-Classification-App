@@ -8,14 +8,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context= ".MainActivity"
-    tools:showIn= "@layout/app_bar_main" >
+    tools:showIn= "@layout/app_bar_main"
+    android:id="@+id/content_main">
 
     <FrameLayout
         android:id="@+id/camera_container"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginBottom="50dp"
-        android:background="#000"/>
+        android:layout_height="match_parent"
+        android:background="#fff"/>
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bar"
@@ -23,8 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:backgroundTint="@color/gradient_end"
-        app:fabAlignmentMode="center"
-        app:fabAttached="true" />
+        app:fabAlignmentMode="center" />
     <com.google.android.material.bottomnavigation.BottomNavigationView
         style="@style/Widget.MaterialComponents.BottomNavigationView"
         android:id="@+id/bottom_navigation"
@@ -32,13 +31,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/transparent"
+        app:elevation="0dp"
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
         app:menu="@menu/bottom_menu" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         style="@style/FloatingButton"
-        android:id="@+id/fab"
+        android:id="@+id/main_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"

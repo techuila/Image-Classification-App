@@ -102,6 +102,16 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/forgot"
+        android:textColor="@color/blue1"
+        app:layout_constraintStart_toStartOf="@+id/password"
+        app:layout_constraintTop_toBottomOf="@+id/password" />
+
 <!--    <EditText-->
 <!--        android:id="@+id/password"-->
 <!--        android:layout_width="0dp"-->
@@ -121,17 +131,17 @@
 
     <Button
         android:id="@+id/login"
-        android:backgroundTint="@color/gradient_end"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="34dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/gradient_end"
 
-        android:textColor="@color/white"
         android:text="@string/login"
+        android:textColor="@color/white"
 
         app:layout_constraintBottom_toTopOf="@id/sign_up"
         app:layout_constraintEnd_toEndOf="parent"
@@ -173,5 +183,15 @@
         app:layout_constraintStart_toStartOf="@+id/password"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="27dp"
+        android:text="@string/app_version"
+        android:textColor="#e2e2e2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

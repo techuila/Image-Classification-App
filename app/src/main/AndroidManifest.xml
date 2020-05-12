@@ -2,10 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ibato">
 
+    <uses-feature android:name="android.hardware.camera" android:required="true"/>
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="true"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
@@ -26,7 +28,16 @@
 
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+
+        <activity
+            android:name=".feedback.FeedbackActivity">
+        </activity>
+
+        <activity
+            android:name=".tutorial.TutorialActivity">
         </activity>
 
         <activity
@@ -34,11 +45,11 @@
         </activity>
 
         <activity
-            android:name=".HistoryActivity">
+            android:name=".history.HistoryActivity">
         </activity>
 
         <activity
-            android:name=".DetailActivity">
+            android:name=".history.DetailActivity">
         </activity>
 
         <activity

@@ -24,10 +24,12 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="btn_back"><![CDATA[← Already registered? Sign in now!]]></string>
+    <string name="submit">Submit</string>
+    <string name="feedback_page_title">Add Feedback</string>
 
     <string name="picture">Picture</string>
     <string name="description_info">Info</string>
-    <string name="nav_home">Home</string>
+    <string name="nav_home">Feedbacks</string>
     <string name="nav_gallery">Gallery</string>
     <string name="nav_explore">Gallery</string>
     <string name="nav_me">Me</string>
@@ -45,6 +47,12 @@
     <string name="sample_header_name">Jose Mari Chan</string>
     <string name="sample_header_email">josemari_chan@gmail.com</string>
     <string name="profile">Profile</string>
+    <string name="about">About iBato</string>
     <string name="history">History</string>
     <string name="logout">Logout</string>
+    <string name="forgot">Forgot Password?</string>
+
+    <string name="app_version">v3.0</string>
+
+    <string name="app_description">iBato Application is an application that can be used by Hemodialysis Patients, the vegetables that the application can only recognize are the vegetables that are only can be found around in Zamboanga City and thus help hemodialysis patients with their Vegetable Dietary Restriction.</string>
 </resources>

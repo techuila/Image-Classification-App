@@ -2,32 +2,34 @@ package com.example.ibato;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.PersistableBundle;
-import android.provider.ContactsContract;
-import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.ibato.interfaces.IMainActivity;
+import com.example.ibato.models.User;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
@@ -43,20 +45,23 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ProfileActivity extends AppCompatActivity implements View.OnClickListener  {
+import static com.example.ibato.Utils.Utils.getDatabase;
 
+public class ProfileActivity extends Fragment implements
+        View.OnClickListener,
+        PopupMenu.OnMenuItemClickListener {
+
+    public static ProfileActivity newInstance(){
+        return new ProfileActivity();
+    }
+
+    private IMainActivity mIMainActivity;
     private final String TAG = "ProfileActivity";
     private final int TAKE_IMAGE_CODE = 10001;
 
-    private Button mBackButton, mChangePassword, mSaveChanges;
+    private Button mBackButton, mChangePassword, mSaveChanges, mOptionMenu;
     private TextInputEditText mName, mEmail, mPhone, mAddress;
     private ProgressDialog progressDialog;
     private CircleImageView mProfileImage;
@@ -64,36 +69,59 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabaseRef;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_profile, container, false);
 
-        initialize();
+        return view;
     }
 
-    private void initialize() {
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        initialize(view);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try{
+            mIMainActivity = (IMainActivity) ProfileActivity.this.getActivity();
+        }catch (ClassCastException e){
+            Log.e(TAG, "onAttach: ClassCastException: " + e.getMessage() );
+        }
+    }
+
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_profile);
+//
+//
+//    }
+
+    private void initialize(final View view) {
         /* Components */
-        mBackButton = (Button) findViewById(R.id.back_button);
-        mSaveChanges = (Button) findViewById(R.id.save_changes);
-        mChangePassword = (Button) findViewById(R.id.change_password);
-        mProfileImage = (CircleImageView) findViewById(R.id.profile_image);
-        mName = (TextInputEditText) findViewById(R.id.account_name_input);
-        mEmail = (TextInputEditText) findViewById(R.id.email_input);
-        mPhone = (TextInputEditText) findViewById(R.id.phone_input);
-        mAddress = (TextInputEditText) findViewById(R.id.address_input);
-        progressDialog = new ProgressDialog(ProfileActivity.this);
+//        mBackButton = (Button) view.findViewById(R.id.back_button);
+        mOptionMenu = (Button) view.findViewById(R.id.menu_button);
+        mSaveChanges = (Button) view.findViewById(R.id.save_changes);
+        mChangePassword = (Button) view.findViewById(R.id.change_password);
+        mProfileImage = (CircleImageView) view.findViewById(R.id.profile_image);
+        mName = (TextInputEditText) view.findViewById(R.id.account_name_input);
+        mEmail = (TextInputEditText) view.findViewById(R.id.email_input);
+        mPhone = (TextInputEditText) view.findViewById(R.id.phone_input);
+        mAddress = (TextInputEditText) view.findViewById(R.id.address_input);
 
         /* Firebase */
         mAuth = FirebaseAuth.getInstance();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid());
+        mDatabaseRef = getDatabase().getReference("users").child(mAuth.getCurrentUser().getUid());
 
         /* Fill form from firebase authentication */
         mName.setText(mAuth.getCurrentUser().getDisplayName());
         mEmail.setText(mAuth.getCurrentUser().getEmail());
         if (mAuth.getCurrentUser().getPhotoUrl() != null)
             Glide.with(this).load(mAuth.getCurrentUser().getPhotoUrl()).into(mProfileImage);
-
 
         /* Fill form from firebase database */
         mDatabaseRef.addValueEventListener(new ValueEventListener() {
@@ -108,24 +136,25 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(ProfileActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
         /* Action Listeners */
-        mBackButton.setOnClickListener(this);
+//        mBackButton.setOnClickListener(this);
         mChangePassword.setOnClickListener(this);
         mSaveChanges.setOnClickListener(this);
         mProfileImage.setOnClickListener(this);
+        mOptionMenu.setOnClickListener(this);
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()) {
-            case R.id.back_button: {
-                startActivity(new Intent(ProfileActivity.this, MainActivity.class));
-                break;
-            }
+//            case R.id.back_button: {
+//                startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+//                break;
+//            }
 
             case R.id.change_password: {
                 View mContent = ProfileActivity.this.getLayoutInflater().inflate(R.layout.dialog_change_password, null);
@@ -133,7 +162,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 final TextInputEditText mPassword = mContent.findViewById(R.id.password_input);
                 final TextInputEditText mConfirmPassword = mContent.findViewById(R.id.confirm_password_input);
 
-                final AlertDialog aDialog = new AlertDialog.Builder(ProfileActivity.this, R.style.AlertDialogTheme)
+                final AlertDialog aDialog = new AlertDialog.Builder(v.getContext(), R.style.AlertDialogTheme)
                         .setTitle("Change Password")
                         .setView(mContent)
                         .setNegativeButton("Cancel", null)
@@ -182,13 +211,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<Void> task) {
                                                                     aDialog.dismiss();
-                                                                    Toast.makeText(ProfileActivity.this, "Successfully Changed Password!", Toast.LENGTH_SHORT).show();
+                                                                    Toast.makeText(ProfileActivity.this.getActivity(), "Successfully Changed Password!", Toast.LENGTH_SHORT).show();
                                                                 }
                                                             })
                                                             .addOnFailureListener(new OnFailureListener() {
                                                                 @Override
                                                                 public void onFailure(@NonNull Exception e) {
-                                                                    Toast.makeText(ProfileActivity.this, "Change Password Failed!", Toast.LENGTH_SHORT).show();
+                                                                    Toast.makeText(ProfileActivity.this.getActivity(), "Change Password Failed!", Toast.LENGTH_SHORT).show();
                                                                 }
                                                             });
                                                 } else {
@@ -225,61 +254,63 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             case R.id.save_changes: {
-                showProgressDialog(true);
+                if (mPhone.length() != 0 && mPhone.length() < 11) {
+                    mPhone.setError("Length of phone number should be 11");
+                    mPhone.requestFocus();
+                    return;
+                }
+
+                mIMainActivity.showProgressDialog(true);
+
 
                 mAuth.getCurrentUser().updateEmail(mEmail.getText().toString())
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
+                    .addOnCompleteListener((task) -> {
                             if (task.isSuccessful()) {
                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(mName.getText().toString())
                                         .build();
                                 mAuth.getCurrentUser().updateProfile(profileUpdates);
 
-                                User user = new User(mName.getText().toString(), mPhone.getText().toString(), mAddress.getText().toString());
+                                User user = new User(mName.getText().toString(), mPhone.getText().toString(), mAddress.getText().toString(), null);
                                 mDatabaseRef.setValue(user);
 
-                                Toast.makeText(ProfileActivity.this, "Profile Successfully Updated!", Toast.LENGTH_SHORT).show();
-                                showProgressDialog(false);
+                                Toast.makeText(v.getContext(), "Profile Successfully Updated!", Toast.LENGTH_SHORT).show();
+                                mIMainActivity.showProgressDialog(false);
                             }
-                        }
+
                     }).addOnCanceledListener(new OnCanceledListener() {
                         @Override
                         public void onCanceled() {
-                            Toast.makeText(ProfileActivity.this, "Profile Update Failed!", Toast.LENGTH_SHORT).show();
-                            showProgressDialog(false);
+                            Toast.makeText(v.getContext(), "Profile Update Failed!", Toast.LENGTH_SHORT).show();
+                            mIMainActivity.showProgressDialog(false);
                         }
                     });
 
                 break;
             }
-        }
-    }
 
-    private void showProgressDialog(Boolean show) {
-        if (show) {
-            progressDialog.show();
-            progressDialog.setContentView(R.layout.progress_dialog);
-            progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        } else {
-            progressDialog.dismiss();
+            case R.id.menu_button: {
+                PopupMenu popup = new PopupMenu(v.getContext(), v);
+                popup.setOnMenuItemClickListener(this);
+                popup.inflate(R.menu.profile_actions);
+                popup.show();
+                break;
+            }
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == TAKE_IMAGE_CODE && resultCode == RESULT_OK) {
-            switch (resultCode) {
-                case RESULT_OK:
-                    handleUpload(data.getData());
+        if (requestCode == TAKE_IMAGE_CODE && resultCode == ProfileActivity.this.getActivity().RESULT_OK) {
+            if (resultCode == ProfileActivity.this.getActivity().RESULT_OK) {
+                handleUpload(data.getData());
             }
         }
     }
 
     private void handleUpload(Uri uri) {
-        showProgressDialog(true);
+        mIMainActivity.showProgressDialog(true);
         final StorageReference reference = FirebaseStorage.getInstance().getReference("profileImages").child(mAuth.getCurrentUser().getUid()).child(uri.getLastPathSegment());
 
         reference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -288,7 +319,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        showProgressDialog(false);
+                        mIMainActivity.showProgressDialog(false);
                         Glide.with(ProfileActivity.this).load(uri).into(mProfileImage);
                         Log.d("tag", "onSuccess: Uploaded Image URl is " + uri.toString());
                         setUserProfileUrl(uri);
@@ -298,13 +329,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ProfileActivity.this, "Update Failed!", Toast.LENGTH_SHORT).show();
-                showProgressDialog(false);
+                Toast.makeText(ProfileActivity.this.getActivity(), "Update Failed!", Toast.LENGTH_SHORT).show();
+                mIMainActivity.showProgressDialog(false);
             }
         });
     }
 
-    private void setUserProfileUrl(Uri uri) {
+    private void setUserProfileUrl(final Uri uri) {
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setPhotoUri(uri)
                 .build();
@@ -313,14 +344,41 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Toast.makeText(ProfileActivity.this, "Successfully Updated Profile Image!", Toast.LENGTH_SHORT).show();
+                    mDatabaseRef.child("profilePicture").setValue(uri.toString());
+                    Toast.makeText(ProfileActivity.this.getActivity(), "Successfully Updated Profile Image!", Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(ProfileActivity.this, "Profile image update failed!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProfileActivity.this.getActivity(), "Profile image update failed!", Toast.LENGTH_SHORT).show();
                 }
             });
 
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.logout: {
+                Snackbar snackbar = Snackbar.make(ProfileActivity.this.getActivity().findViewById(android.R.id.content), "Logging out...", Snackbar.LENGTH_SHORT);
+                snackbar.setAnchorView(MainActivity.mMainButton);
+                snackbar.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
+                snackbar.setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
+
+                        mAuth.signOut();
+                        getActivity().finish();
+                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                    }
+                });
+                snackbar.show();
+                return true;
+            }
+
+            default:
+                return false;
+        }
     }
 }

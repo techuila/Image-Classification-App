@@ -38,4 +38,7 @@
     <color name="darkTransparentGrey">#a0737373 </color>
     <color name="DarkGrey">#737373 </color>
     <color name="Black">#000 </color>
+    <color name="duskYellow">#ffd808 </color>
+
+    <color name="tab_indicator_gray">#c0c0c0</color>
 </resources>

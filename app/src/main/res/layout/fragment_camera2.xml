@@ -5,10 +5,11 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:colorpicker="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/parent_layout">
+    android:id="@+id/parent_layout"
+    android:background="#000">
 
 
-    <com.example.ibato.ScalingTextureView
+    <com.example.ibato.camera.ScalingTextureView
         android:id="@+id/texture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,23 +17,21 @@
         android:layout_alignParentTop="true"/>
 
     <!-- Menu Button-->
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:id="@+id/menu_container"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="@dimen/stillshot_widget_margin_sides"
-        android:layout_marginTop="@dimen/cam_widget_margin_top">
+<!--    <RelativeLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:padding="12dp"-->
+<!--        android:id="@+id/menu_container"-->
+<!--        android:layout_alignParentStart="true"-->
+<!--        android:layout_marginStart="@dimen/stillshot_widget_margin_sides"-->
+<!--        android:layout_marginTop="@dimen/cam_widget_margin_top">-->
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/chevron_selected"
-            android:layout_centerInParent="true"/>
-
-
-    </RelativeLayout>
+<!--        <ImageView-->
+<!--            android:layout_width="20dp"-->
+<!--            android:layout_height="20dp"-->
+<!--            android:src="@drawable/chevron_selected"-->
+<!--            android:layout_centerInParent="true"/>-->
+<!--    </RelativeLayout>-->
 
     <!-- Flash Toggle -->
     <RelativeLayout
@@ -53,6 +52,30 @@
             android:padding="@dimen/cam_content_inset_secondary"
             android:scaleType="fitXY"
             android:src="@drawable/ic_flash_off"
+            tools:ignore="ContentDescription"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="1dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="90dp"
+        android:background="#00000000"
+        android:id="@+id/info_container">
+
+        <ImageButton
+            android:id="@+id/info_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="@drawable/cam_circle_selector"
+            android:padding="@dimen/cam_content_inset_secondary"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_info"
             tools:ignore="ContentDescription"
             />
 
@@ -95,39 +118,39 @@
 
 
     <!-- Capture Stillshot Button -->
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/cam_widget_margin_bottom"
-        android:padding="@dimen/cam_content_inset_primary"
-        android:background="@drawable/circle_opaque"
-        android:id="@+id/capture_button_container">
+<!--    <RelativeLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_marginBottom="@dimen/cam_widget_margin_bottom"-->
+<!--        android:padding="@dimen/cam_content_inset_primary"-->
+<!--        android:background="@drawable/circle_opaque"-->
+<!--        android:id="@+id/capture_button_container">-->
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="1dp"
-            android:background="@drawable/circle_white"
-            android:layout_centerInParent="true"
-            android:id="@+id/capture_button_secondary_container">
+<!--        <RelativeLayout-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:padding="1dp"-->
+<!--            android:background="@drawable/circle_white"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:id="@+id/capture_button_secondary_container">-->
 
-            <ImageButton
-                android:id="@+id/stillshot"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:background="@drawable/cam_circle_selector"
-                android:padding="@dimen/cam_content_inset_secondary"
-                android:scaleType="fitXY"
-                tools:ignore="ContentDescription"
-                />
+<!--            <ImageButton-->
+<!--                android:id="@+id/stillshot"-->
+<!--                android:layout_width="60dp"-->
+<!--                android:layout_height="60dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:background="@drawable/cam_circle_selector"-->
+<!--                android:padding="@dimen/cam_content_inset_secondary"-->
+<!--                android:scaleType="fitXY"-->
+<!--                tools:ignore="ContentDescription"-->
+<!--                />-->
 
 
-        </RelativeLayout>
+<!--        </RelativeLayout>-->
 
-    </RelativeLayout>
+<!--    </RelativeLayout>-->
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -136,7 +159,7 @@
         android:visibility="visible">
 
 
-        <com.example.ibato.DrawableImageView
+        <com.example.ibato.camera.DrawableImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/stillshot_imageview"/>
@@ -280,38 +303,103 @@
 <!--        </RelativeLayout>-->
 
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
+<!--        <RelativeLayout-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:padding="@dimen/cam_content_inset_primary"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            android:layout_centerHorizontal="true"-->
+<!--            android:layout_marginBottom="@dimen/cam_widget_margin_bottom"-->
+<!--            android:background="@drawable/circle_opaque"-->
+<!--            android:id="@+id/save_container">-->
+
+<!--            <RelativeLayout-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:padding="1dp"-->
+<!--                android:background="@drawable/circle_white">-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/save_stillshot"-->
+<!--                    android:layout_width="60dp"-->
+<!--                    android:layout_height="60dp"-->
+<!--                    android:layout_centerInParent="true"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:background="@drawable/cam_grey_circle_selector"-->
+<!--                    android:padding="@dimen/cam_content_inset_secondary"-->
+<!--                    android:scaleType="fitXY"-->
+<!--                    android:src="@drawable/ic_save_small"-->
+<!--                    tools:ignore="ContentDescription"-->
+<!--                    />-->
+
+<!--            </RelativeLayout>-->
+
+<!--        </RelativeLayout>-->
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/classify_card"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/cam_content_inset_primary"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="false"
-            android:layout_marginBottom="@dimen/cam_widget_margin_bottom"
-            android:background="@drawable/circle_opaque"
-            android:id="@+id/save_container">
+            android:layout_marginBottom="130dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="22dp">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/card_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="1dp"
-                android:background="@drawable/circle_white">
+                android:paddingTop="16dp"
+                android:visibility="gone"
+                android:paddingBottom="16dp">
 
-                <ImageButton
-                    android:id="@+id/save_stillshot"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_centerInParent="true"
-                    android:layout_gravity="center"
-                    android:background="@drawable/cam_grey_circle_selector"
-                    android:padding="@dimen/cam_content_inset_secondary"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_save_small"
-                    tools:ignore="ContentDescription"
-                    />
+                <ImageView
+                    android:id="@+id/status_img"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/ic_check_black_24dp"
+                    android:layout_centerInParent="true"/>
 
+                <TextView
+                    android:id="@+id/veg_name_txt"
+                    android:textColor="#262626"
+                    android:text="Carrots"
+                    android:textSize="20sp"
+                    android:layout_marginTop="6dp"
+                    android:layout_below="@id/status_img"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/desc_txt"
+                    android:layout_below="@id/veg_name_txt"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:maxLines="3"
+                    android:drawablePadding="10dp"
+                    android:ellipsize="end"
+                    android:text="Description"
+                    android:textAlignment="center"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </RelativeLayout>
 
-        </RelativeLayout>
+            <ProgressBar
+                android:id="@+id/loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+
+                />
+
+        </androidx.cardview.widget.CardView>
 
     </RelativeLayout>
 

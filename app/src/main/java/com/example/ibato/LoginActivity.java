@@ -7,14 +7,17 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ibato.tutorial.TutorialActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -25,8 +28,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     FirebaseAuth mAuth;
 
+    private static final String TAG = "Login Activity";
     private ImageView appLogo;
     private TextInputEditText emailEditText, passwordEditText;
+    private TextView mForgotPassword;
     private Button loginBtn, signUpBtn;
     private ProgressBar progressBar;
 
@@ -59,6 +64,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginBtn = (Button) findViewById(R.id.login);
         signUpBtn = (Button) findViewById(R.id.sign_up);
         progressBar = (ProgressBar) findViewById(R.id.loading);
+        mForgotPassword = (TextView) findViewById(R.id.forgot_password);
 
         /* Action Listeners */
         loginBtn.setOnClickListener(this);
@@ -69,6 +75,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         if (v == loginBtn) handleLogin();
         else if (v == signUpBtn) handleSignUp();
+        else if (v == mForgotPassword) handleForgotPW();
     }
 
     private void handleLogin() {
@@ -120,14 +127,37 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         startActivity(new Intent(this, SignUpActivity.class));
     }
 
+    private void handleForgotPW() {
+        String email = emailEditText.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            emailEditText.setError("Email is required");
+            emailEditText.requestFocus();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailEditText.setError("Please enter a valid email");
+            emailEditText.requestFocus();
+            return;
+        }
+
+        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Email sent.");
+                    }
+                });
+    }
+
     private void switchToNextIntent(Boolean isLogin) {
 
         if (isLogin) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, TutorialActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         } else {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            startActivity(new Intent(LoginActivity.this, TutorialActivity.class));
         }
     }
 

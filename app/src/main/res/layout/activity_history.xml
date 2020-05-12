@@ -5,35 +5,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
-    <Button
-        style="@style/Widget.App.Button.OutlinedButton.IconOnly"
-        android:id="@+id/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="3dp"
-        app:icon="@drawable/back2" />
+    <ImageView
+        android:id="@+id/home_bg"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/logo_description"
+        android:scaleType="centerCrop"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/bg" />
+
+    <ImageView
+        android:id="@+id/app_logo"
+        android:layout_width="25dp"
+        android:layout_height="38dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/logo_description"
+        android:scaleType="fitCenter"
+        android:layout_toStartOf="@+id/textView3"
+        android:layout_alignBottom="@+id/textView3"
+        android:src="@drawable/logo_no_background" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="26dp"
         android:layout_centerHorizontal="true"
-        android:textSize="24dp"
-        android:text="@string/history" />
+        android:textSize="32dp"
+        android:textColor="@color/gradient_end"
+        android:fontFamily="@font/montserrat_light"
+        android:text="BATO" />
 
-    <androidx.viewpager.widget.ViewPager
-        android:foregroundGravity="center"
+    <ListView
         android:id="@+id/viewPager"
-        android:layout_centerInParent="true"
-        android:overScrollMode="never"
-        android:clipToPadding="false"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </androidx.viewpager.widget.ViewPager>
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:clipToPadding="false"
+        android:foregroundGravity="center">
+    </ListView>
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/viewPager"
+        android:layout_alignBottom="@+id/viewPager"
+        android:layout_centerHorizontal="true" />
+
+<!--    <androidx.viewpager.widget.ViewPager-->
+<!--        android:id="@+id/viewPager"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_marginTop="100dp"-->
+<!--        android:clipToPadding="false"-->
+<!--        android:foregroundGravity="center"-->
+<!--        android:overScrollMode="never">-->
+
+<!--    </androidx.viewpager.widget.ViewPager>-->
 
 </RelativeLayout>

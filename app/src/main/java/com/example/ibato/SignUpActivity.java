@@ -1,23 +1,19 @@
 package com.example.ibato;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.ibato.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
@@ -26,11 +22,8 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
-import java.util.Map;
+import static com.example.ibato.Utils.Utils.getDatabase;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -55,7 +48,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private void initialize() {
         // Firebase instance auth
         mAuth = FirebaseAuth.getInstance();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
+        mDatabaseRef = getDatabase().getReference("users");
 
         // Components initialization
         loginBtn = (Button) findViewById(R.id.login);
@@ -124,7 +117,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
                     userID = mAuth.getCurrentUser().getUid();
-                    User user = new User(fullName, "", "");
+                    User user = new User(fullName, "", "", null);
                     mDatabaseRef.child(userID).setValue(user);
 
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()

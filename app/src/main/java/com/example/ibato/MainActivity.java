@@ -6,49 +6,40 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.BlendMode;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.bumptech.glide.Glide;
-import com.google.android.material.bottomappbar.BottomAppBar;
+import com.example.ibato.camera.Camera2Fragment;
+import com.example.ibato.feedback.FeedbackActivity;
+import com.example.ibato.history.HistoryActivity;
+import com.example.ibato.interfaces.IMainActivity;
+import com.example.ibato.tutorial.TutorialActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.io.IOException;
+
+import static com.example.ibato.Utils.Utils.getDatabase;
 
 public class MainActivity extends AppCompatActivity implements
-    IMainActivity,
-    BottomNavigationView.OnNavigationItemSelectedListener
+        IMainActivity,
+        BottomNavigationView.OnNavigationItemSelectedListener
 {
 
     private static final String TAG = "MainActivity";
@@ -58,10 +49,11 @@ public class MainActivity extends AppCompatActivity implements
     public static String MAX_ASPECT_RATIO;
     private DrawerLayout navDrawer;
     private ProgressDialog progressDialog;
-    private TextView nameText, emailText;
-    private View headerView;
-    private CircleImageView mProfileImage;
     private BottomNavigationView mBottomBar;
+    public static FloatingActionButton mMainButton;
+
+    FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
 
     FirebaseAuth mAuth;
     DatabaseReference mDatabaseRef;
@@ -78,58 +70,98 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mBottomBar = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        emailText = (TextView) headerView.findViewById(R.id.email_address);
-        nameText = (TextView) headerView.findViewById(R.id.account_name);
-        mProfileImage = (CircleImageView) headerView.findViewById(R.id.profile_image);
-
-        mBottomBar.bringToFront();
+        mMainButton = findViewById(R.id.main_button);
 
         progressDialog = new ProgressDialog(MainActivity.this);
 
         mAuth = FirebaseAuth.getInstance();
         userID = mAuth.getCurrentUser().getUid();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("users" ).child(userID);
+        mDatabaseRef = getDatabase().getReference("users" ).child(userID);
 
         FirebaseUser user = mAuth.getCurrentUser();
 
-        if (user != null) {
-            String email = user.getEmail();
-            emailText.setText(email);
-
-            if (mAuth.getCurrentUser().getPhotoUrl() != null)
-                Glide.with(this).load(mAuth.getCurrentUser().getPhotoUrl()).into(mProfileImage);
-
-            if (user.getDisplayName() != null && user.getDisplayName() != "") {
-                nameText.setText(user.getDisplayName());
-            } else {
-                mDatabaseRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            User user = dataSnapshot.getValue(User.class);
-                            Log.d(TAG, user.getName());
-
-                            nameText.setText(user.getName());
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        }
+//        if (user != null) {
+//            String email = user.getEmail();
+//            emailText.setText(email);
+//
+//            if (mAuth.getCurrentUser().getPhotoUrl() != null)
+//                Glide.with(this).load(mAuth.getCurrentUser().getPhotoUrl()).into(mProfileImage);
+//
+//            if (user.getDisplayName() != null && user.getDisplayName() != "") {
+//                nameText.setText(user.getDisplayName());
+//            } else {
+//                mDatabaseRef.addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()) {
+//                            User user = dataSnapshot.getValue(User.class);
+//                            Log.d(TAG, user.getName());
+//
+//                            nameText.setText(user.getName());
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//                        Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//        }
 
         mBottomBar.setOnNavigationItemSelectedListener(this);
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
+            @Override
+            public void onFragmentResumed(FragmentManager fm, Fragment f) {
+                super.onFragmentResumed(fm, f);
+                Log.v("FragXX6", f.getTag());
+
+                if (f.getTag() == getString(R.string.fragment_camera2)) {
+                    mBottomBar.getMenu().getItem(2).setChecked(true);
+                    mMainButton.setImageResource(R.drawable.capture2);
+                } else if (f.getTag() == "ProfileFragment") {
+                    mMainButton.setImageResource(R.drawable.ic_camera);
+                    mBottomBar.getMenu().getItem(4).setChecked(true);
+                    CAMERA_POSITION_FRONT = null;
+                    CAMERA_POSITION_BACK = null;
+                } else if (f.getTag() == "AboutFragment") {
+                    mBottomBar.getMenu().getItem(3).setChecked(true);
+                    mMainButton.setImageResource(R.drawable.ic_camera);
+                    CAMERA_POSITION_FRONT = null;
+                    CAMERA_POSITION_BACK = null;
+                }  else if (f.getTag() == "HistoryFragment") {
+                    mBottomBar.getMenu().getItem(0).setChecked(true);
+                    mMainButton.setImageResource(R.drawable.ic_camera);
+                    CAMERA_POSITION_FRONT = null;
+                    CAMERA_POSITION_BACK = null;
+                } else if (f.getTag() == "FeedbackFragment") {
+                    mBottomBar.getMenu().getItem(1).setChecked(true);
+                    mMainButton.setImageResource(R.drawable.ic_camera);
+                    CAMERA_POSITION_FRONT = null;
+                    CAMERA_POSITION_BACK = null;
+                }
+            }
+        }, true);
+        mMainButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getFragment().getTag() == getString(R.string.fragment_camera2)) {
+                    ((Camera2Fragment) getFragment()).captureTriggered();
+                } else {
+                    startCamera2();
+                }
+            }
+        });
 
         init();
     }
 
-    private void startCamera2(){
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.camera_container, Camera2Fragment.newInstance(), getString(R.string.fragment_camera2));
-        transaction.commit();
+    @Override
+    public void startCamera2(){
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.camera_container, Camera2Fragment.newInstance(), getString(R.string.fragment_camera2));
+        fragmentTransaction.commit();
     }
 
     private void init(){
@@ -206,6 +238,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public Fragment getFragment() {
+        return fragmentManager.findFragmentById(R.id.camera_container);
+    }
+
+    @Override
     public void showProgressDialog(Boolean show) {
         if (show) {
             progressDialog.show();
@@ -216,16 +253,16 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void openDrawer(Boolean isBackPressed) {
-        if(navDrawer.isDrawerOpen(GravityCompat.START)) {
-            navDrawer.closeDrawer(GravityCompat.START);
-        } else if (isBackPressed) {
-            finish();
-        } else {
-            navDrawer.openDrawer(GravityCompat.START);
-        }
-    }
+//    @Override
+//    public void openDrawer(Boolean isBackPressed) {
+//        if(navDrawer.isDrawerOpen(GravityCompat.START)) {
+//            navDrawer.closeDrawer(GravityCompat.START);
+//        } else if (isBackPressed) {
+//            finish();
+//        } else {
+//            navDrawer.openDrawer(GravityCompat.START);
+//        }
+//    }
 
     @Override
     public void setCameraBackFacing() {
@@ -295,34 +332,72 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onBackPressed() {
-        openDrawer(true);
+    public void showTutorial() {
+        Intent intent = new Intent(MainActivity.this, TutorialActivity.class);
+        intent.putExtra("IS_INFO_CLICKED", Boolean.TRUE);
+        startActivity(intent);
     }
+
+//    @Override
+//    public void onBackPressed() {
+//        FeedbackActivity myFragment = (FeedbackActivity)getSupportFragmentManager().findFragmentByTag("FeedbackFragment");
+//        if (myFragment != null && myFragment.isVisible()) {
+//
+//        } else {
+//            super.onBackPressed();
+//        }
+//    }
 
     @SuppressWarnings("StatementWIthEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav_profile: {
-                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
-                break;
+        try {
+            fragmentTransaction = fragmentManager.beginTransaction();
+
+            switch (item.getItemId()) {
+                case R.id.nav_home: {
+                    openFragment(item, FeedbackActivity.class, "FeedbackFragment");
+                    break;
+                }
+
+                case R.id.nav_aboutus: {
+                    openFragment(item, AboutActivity.class,"AboutFragment");
+                    break;
+                }
+
+                case R.id.nav_profile: {
+                    openFragment(item, ProfileActivity.class,"ProfileFragment");
+                    break;
+                }
+
+                case R.id.nav_gallery: {
+                    openFragment(item, HistoryActivity.class,"HistoryFragment");
+                    break;
+                }
+
+                case R.id.logout: {
+                    item.setChecked(true);
+                    mAuth.signOut();
+                    finish();
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                }
             }
 
-            case R.id.nav_gallery:
-            case R.id.nav_history: {
-                startActivity(new Intent(MainActivity.this, HistoryActivity.class));
-                break;
-            }
-
-            case R.id.logout: {
-                mAuth.signOut();
-                finish();
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
-            }
+//        openDrawer(false);
+        } catch (IllegalAccessException ex) {
+            Log.d(TAG, "IllegalAccessException", ex);
+        } catch (InstantiationException ex) {
+            Log.d(TAG, "InstantiationException", ex);
         }
 
-        openDrawer(false);
         return true;
+    }
+
+    private void openFragment(MenuItem item, Class<? extends Fragment> fragment, String tag) throws IllegalAccessException, InstantiationException {
+        item.setChecked(true);
+
+        fragmentTransaction.replace(R.id.camera_container, fragment.newInstance(), tag);
+        fragmentTransaction.commit();
     }
 }
 
