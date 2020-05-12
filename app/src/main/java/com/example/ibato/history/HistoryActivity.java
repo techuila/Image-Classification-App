@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -57,6 +58,8 @@ public class HistoryActivity extends Fragment {
     private FirebaseStorage mStorage;
     private String userID;
     private ProgressBar progressBar;
+    private RelativeLayout mEmpty;
+
 
     @Nullable
     @Override
@@ -72,10 +75,11 @@ public class HistoryActivity extends Fragment {
         models = new ArrayList<>();
         adapter = new Adapter(models, view.getContext(), HistoryActivity.this);
 
+        mEmpty = view.findViewById(R.id.empty_content);
         progressBar = view.findViewById(R.id.loading);
         viewPager = view.findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
-        viewPager.setPadding(130, 0, 130, 0);
+//        viewPager.setPadding(130, 0, 130, 0);
 
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mStorage = FirebaseStorage.getInstance();
@@ -89,6 +93,12 @@ public class HistoryActivity extends Fragment {
                 models.clear();
 
                 Log.d(TAG, "NAKU POOOOO=========");
+
+                if (dataSnapshot.getChildrenCount() == 0) {
+                    mEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    mEmpty.setVisibility(View.GONE);
+                }
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Model model = postSnapshot.getValue(Model.class);

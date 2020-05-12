@@ -169,7 +169,10 @@ public class MainActivity extends AppCompatActivity implements
             if(checkCameraHardware(this)){
 
                 // Open the Camera
-                startCamera2();
+//                startCamera2();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.camera_container, HistoryActivity.newInstance(), "HistoryFragment");
+                fragmentTransaction.commit();
             }
             else{
                 showSnackBar("You need a camera to use this application", Snackbar.LENGTH_INDEFINITE);

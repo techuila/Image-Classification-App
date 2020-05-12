@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.example.ibato.tutorial.TutorialActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -69,6 +71,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         /* Action Listeners */
         loginBtn.setOnClickListener(this);
         signUpBtn.setOnClickListener(this);
+        mForgotPassword.setOnClickListener(this);
     }
 
     @Override
@@ -142,11 +145,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
+        progressBar.setVisibility(View.VISIBLE);
+
+
         FirebaseAuth.getInstance().sendPasswordResetEmail(email)
                 .addOnCompleteListener(task -> {
+                    String message = "";
                     if (task.isSuccessful()) {
+                        message = "Email successfully sent!";
                         Log.d(TAG, "Email sent.");
+                    } else {
+                        message = "There was an error occurred!";
+                        Log.d(TAG, "Email not sent.");
                     }
+
+                    Snackbar snackbar = Snackbar.make(this.findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT);
+                    snackbar.setAnchorView(MainActivity.mMainButton);
+                    snackbar.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
+                    snackbar.show();
+
+                    progressBar.setVisibility(View.GONE);
                 });
     }
 

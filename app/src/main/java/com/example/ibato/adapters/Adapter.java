@@ -5,23 +5,32 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.example.ibato.history.DetailActivity;
 import com.example.ibato.history.HistoryActivity;
 import com.example.ibato.R;
 import com.example.ibato.models.Model;
 
+import java.io.IOException;
 import java.util.List;
 
 public class Adapter extends BaseAdapter {
@@ -62,12 +71,15 @@ public class Adapter extends BaseAdapter {
 
         /* Declare components */
         TextView mTitle, mDescr;
-        ImageView mStatus;
+        ImageView mStatus, mImage;
+        ProgressBar progressBar;
 
         /* Initialize components */
         mTitle = view.findViewById(R.id.title_text);
         mDescr = view.findViewById(R.id.descr_text);
         mStatus = view.findViewById(R.id.status_img);
+        mImage = view.findViewById(R.id.card_background);
+        progressBar = view.findViewById(R.id.loading);
 
         /* Populate data on layout */
         mTitle.setText(models.get(position).getTitle());
@@ -77,6 +89,40 @@ public class Adapter extends BaseAdapter {
         } else {
             mStatus.setImageResource(R.drawable.ic_close_black_24dp);
         }
+
+        //Loading image using Picasso
+        if (models.get(position).getImage() != null && !models.get(position).getImage().equals(""))
+            Glide.with(context)
+                    .load(models.get(position).getImage())
+                    .apply(
+                        new RequestOptions()
+                                .error(R.drawable.not_found)
+                    )
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            progressBar.setVisibility(View.GONE);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            progressBar.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
+                    .into(mImage);
+        else
+            mImage.setImageResource(R.drawable.no_img);
+
+
+        /* Click to expand event */
+        view.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("param", models.get(position).getTitle());
+            context.startActivity(intent);
+            // finish();
+        });
 
 
         return view;
