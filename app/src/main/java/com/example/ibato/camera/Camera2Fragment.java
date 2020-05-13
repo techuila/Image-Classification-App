@@ -231,6 +231,8 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
     private String imageName = "";
 
+    private Boolean mAutoFocusSupported = false;
+
 
     // presets for rgb conversion
     private static final int RESULTS_TO_SHOW = 3;
@@ -655,7 +657,11 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
      * Initiate a still image capture.
      */
     private void takePicture()  {
-        lockFocus();
+        if (mAutoFocusSupported) {
+            lockFocus();
+        } else {
+            captureStillPicture();
+        }
     }
 
     /**
@@ -1154,6 +1160,16 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                     = manager.getCameraCharacteristics(mCameraId);
 
             Log.d(TAG, "setUpCameraOutputs: camera id: " + mCameraId);
+
+            int[] afAvailableModes = characteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
+
+            if (afAvailableModes.length == 0 || (afAvailableModes.length == 1
+                    && afAvailableModes[0] == CameraMetadata.CONTROL_AF_MODE_OFF)) {
+                mAutoFocusSupported = false;
+            } else {
+                mAutoFocusSupported = true;
+            }
+
 
             StreamConfigurationMap map = characteristics.get(
                     CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
