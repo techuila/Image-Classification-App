@@ -1485,6 +1485,8 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                             scaledHeight
                     );
 
+                    classify(background);
+
                     Glide.with(activity)
                             .setDefaultRequestOptions(options)
                             .load(background)
@@ -1554,7 +1556,6 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         protected void onPostExecute(Integer integer) {
             super.onPostExecute(integer);
             if(integer == 1){
-                classify();
                 displayCapturedImage();
             }
             else{
@@ -1563,7 +1564,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void classify() {
+    private void classify(Bitmap bitmap_orig) {
         mCardContent.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
@@ -1571,7 +1572,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
         Log.d(TAG, "DONE CAPUTE!");
         // get current bitmap from imageView
-        Bitmap bitmap_orig = mCapturedBitmap;
+//        Bitmap bitmap_orig = mBitmap;
         // resize the bitmap to the required input size to the CNN
         Bitmap bitmap = getResizedBitmap(bitmap_orig, DIM_IMG_SIZE_X, DIM_IMG_SIZE_Y);
         // convert bitmap to byte array
@@ -1609,7 +1610,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         mVegRef.orderByChild("name").equalTo(topLables[2]).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (Integer.parseInt(topConfidence[2].substring(0, topConfidence[2].length() - 1)) < -600) {
+                if (Integer.parseInt(topConfidence[2].substring(0, topConfidence[2].length() - 1)) < -300) {
                     topLables[2] = "Unknown";
                     mStatus.setImageResource(R.drawable.ic_help_outline_black_24dp);
                     mVegName.setText("Unknown");
@@ -1657,6 +1658,10 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
+
+        System.out.println("!!!");
+        System.out.println(width);
+        System.out.println(height);
         float scaleWidth = ((float) newWidth) / width;
         float scaleHeight = ((float) newHeight) / height;
         Matrix matrix = new Matrix();

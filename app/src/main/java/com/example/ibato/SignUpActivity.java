@@ -32,7 +32,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     public static final String TAG = "SignUpActivity";
     private ProgressBar progressBar;
-    private TextInputEditText editFullName, editTextEmail, editTextPassword;
+    private TextInputEditText editFullName, editTextEmail, editTextPassword, editTextConfirmPassword;
     private Button loginBtn, signUpBtn;
     String userID;
 
@@ -55,6 +55,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         editFullName = (TextInputEditText) findViewById(R.id.account_name_input);
         editTextEmail = (TextInputEditText) findViewById(R.id.email_input);
         editTextPassword = (TextInputEditText) findViewById(R.id.password_input);
+        editTextConfirmPassword = (TextInputEditText) findViewById(R.id.confirm_password_input);
         signUpBtn = (Button) findViewById(R.id.sign_up);
         progressBar = (ProgressBar) findViewById(R.id.loading);
 
@@ -78,6 +79,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         final String fullName = editFullName.getText().toString().trim();
         final String email = editTextEmail.getText().toString().trim();
         final String password = editTextPassword.getText().toString().trim();
+        final String confirm_password = editTextConfirmPassword.getText().toString().trim();
 
         if (fullName.isEmpty()) {
             editFullName.setError("Name is required");
@@ -100,6 +102,18 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         if (password.isEmpty()) {
             editTextPassword.setError("Password is required");
             editTextPassword.requestFocus();
+            return;
+        }
+
+        if (confirm_password.isEmpty()) {
+            editTextConfirmPassword.setError("Confirm Password is required");
+            editTextConfirmPassword.requestFocus();
+            return;
+        }
+
+        if (!password.equals(confirm_password)) {
+            editTextConfirmPassword.setError("Password doesn't match!");
+            editTextConfirmPassword.requestFocus();
             return;
         }
 
