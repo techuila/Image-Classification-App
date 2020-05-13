@@ -655,6 +655,22 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
             lockFocus();
     }
 
+    private void restartFocus(){
+        try {
+            mPreviewRequestBuilder.set(
+                    CaptureRequest.CONTROL_AF_TRIGGER,
+                    CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
+            mCaptureSession.capture(
+                    mPreviewRequestBuilder.build(),
+                    mCaptureCallback,
+                    mBackgroundHandler);
+            lockFocus();
+
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Lock the focus as the first step for a still image capture.
      */
@@ -757,24 +773,25 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                 }
                 case STATE_WAITING_LOCK: {
                     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
-//                    if (afState == null) {
+                    if (afState == null) {
                         captureStillPicture();
-//                    } else if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
-//                            CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState) {
-//                        // CONTROL_AE_STATE can be null on some devices
-//                        Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-//                        if (aeState == null ||
-//                                aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
-//                            mState = STATE_PICTURE_TAKEN;
-//                            captureStillPicture();
-//                        } else {
-//                            runPrecaptureSequence();
-//                        }
-//                    }
-//                    else if(afState == CaptureResult.CONTROL_AF_STATE_INACTIVE){
-//                        mState = STATE_PICTURE_TAKEN;
-//                        captureStillPicture();
-//                    }
+                    } else if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
+                            CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState) {
+                        // CONTROL_AE_STATE can be null on some devices
+                        Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+                        if (aeState == null ||
+                                aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
+                            mState = STATE_PICTURE_TAKEN;
+                            captureStillPicture();
+                        } else {
+                            runPrecaptureSequence();
+                        }
+                    } else if (afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED) {
+                        restartFocus();
+                    } else if(afState == CaptureResult.CONTROL_AF_STATE_INACTIVE){
+                        mState = STATE_PICTURE_TAKEN;
+                        captureStillPicture();
+                    }
                     break;
                 }
                 case STATE_WAITING_PRECAPTURE: {
