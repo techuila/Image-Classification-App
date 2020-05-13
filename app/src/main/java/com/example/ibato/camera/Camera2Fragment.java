@@ -408,12 +408,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     }
 
     public void captureTriggered() {
-        if(!mIsImageAvailable){
-            Log.d(TAG, "onClick: taking picture.");
-            takePicture();
-        } else {
-            saveCapturedStillshotToDisk();
-        }
+        takePicture();
     }
 
     @Override
@@ -657,11 +652,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
      * Initiate a still image capture.
      */
     private void takePicture()  {
-        if (mAutoFocusSupported) {
             lockFocus();
-        } else {
-            captureStillPicture();
-        }
     }
 
     /**
@@ -678,6 +669,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
             mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
                     mBackgroundHandler);
+//            captureStillPicture();
 
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -854,7 +846,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                 return;
             }
             // This is the CaptureRequest.Builder that we use to take a picture.
-            CaptureRequest.Builder captureBuilder =
+            final CaptureRequest.Builder captureBuilder =
                     mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(mImageReader.getSurface());
 
@@ -949,14 +941,13 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
             // Reset the auto-focus trigger
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
                     CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-
             setAutoFlash(mPreviewRequestBuilder);
-
-            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback, mBackgroundHandler);
+            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
+                    mBackgroundHandler);
             // After this, the camera will go back to the normal state of preview.
             mState = STATE_PREVIEW;
-            mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback, mBackgroundHandler);
-
+            mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback,
+                    mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
