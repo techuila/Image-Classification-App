@@ -408,7 +408,12 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     }
 
     public void captureTriggered() {
-        takePicture();
+        if(!mIsImageAvailable){
+            Log.d(TAG, "onClick: taking picture.");
+            takePicture();
+        } else {
+            saveCapturedStillshotToDisk();
+        }
     }
 
     @Override
@@ -652,7 +657,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
      * Initiate a still image capture.
      */
     private void takePicture()  {
-            lockFocus();
+        lockFocus();
     }
 
     private void restartFocus(){
@@ -1043,9 +1048,9 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                                 // Most new-ish phones can auto focus
                                 mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-
+//                                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
                                 // Flash is automatically enabled when necessary.
-                                setAutoFlash(mPreviewRequestBuilder);
+//                                setAutoFlash(mPreviewRequestBuilder);
 
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
@@ -1183,30 +1188,32 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                     CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             assert map != null;
 
-            Size largest = null;
-            float screenAspectRatio = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT;
-            List<Size> sizes = new ArrayList<>();
-            for( Size size : Arrays.asList(map.getOutputSizes(ImageFormat.JPEG))){
-
-                float temp = (float)size.getWidth() / (float)size.getHeight();
-
-                Log.d(TAG, "setUpCameraOutputs: temp: " + temp);
-                Log.d(TAG, "setUpCameraOutputs: w: " + size.getWidth() + ", h: " + size.getHeight());
-
-                if(temp > (screenAspectRatio - screenAspectRatio * ASPECT_RATIO_ERROR_RANGE )
-                        && temp < (screenAspectRatio + screenAspectRatio * ASPECT_RATIO_ERROR_RANGE)){
-                    sizes.add(size);
-                    Log.d(TAG, "setUpCameraOutputs: found a valid size: w: " + size.getWidth() + ", h: " + size.getHeight());
-                }
-
-            }
-            if(sizes.size() > 0){
-                largest = Collections.max(
-                        sizes,
-                        new Utility.CompareSizesByArea());
-                Log.d(TAG, "setUpCameraOutputs: largest width: " + largest.getWidth());
-                Log.d(TAG, "setUpCameraOutputs: largest height: " + largest.getHeight());
-            }
+            Size largest = Collections.max(
+                    Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
+                    new Utility.CompareSizesByArea());
+//            float screenAspectRatio = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT;
+//            List<Size> sizes = new ArrayList<>();
+//            for( Size size : Arrays.asList(map.getOutputSizes(ImageFormat.JPEG))){
+//
+//                float temp = (float)size.getWidth() / (float)size.getHeight();
+//
+//                Log.d(TAG, "setUpCameraOutputs: temp: " + temp);
+//                Log.d(TAG, "setUpCameraOutputs: w: " + size.getWidth() + ", h: " + size.getHeight());
+//
+//                if(temp > (screenAspectRatio - screenAspectRatio * ASPECT_RATIO_ERROR_RANGE )
+//                        && temp < (screenAspectRatio + screenAspectRatio * ASPECT_RATIO_ERROR_RANGE)){
+//                    sizes.add(size);
+//                    Log.d(TAG, "setUpCameraOutputs: found a valid size: w: " + size.getWidth() + ", h: " + size.getHeight());
+//                }
+//
+//            }
+//            if(sizes.size() > 0){
+//                largest = Collections.max(
+//                        sizes,
+//                        new Utility.CompareSizesByArea());
+//                Log.d(TAG, "setUpCameraOutputs: largest width: " + largest.getWidth());
+//                Log.d(TAG, "setUpCameraOutputs: largest height: " + largest.getHeight());
+//            }
 
             // Find out if we need to swap dimension to get the preview size relative to sensor
             // coordinate.
@@ -1594,7 +1601,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
         initializeTflite();
 
-        Log.d(TAG, "DONE CAPUTE!");
+        Log.d(TAG, "DONE CAPTURE!");
         // get current bitmap from imageView
 //        Bitmap bitmap_orig = mBitmap;
         // resize the bitmap to the required input size to the CNN
@@ -1767,7 +1774,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
             }
 
             Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            bitmap.recycle();
+//            bitmap.recycle();
 
             return bmRotated;
         } catch (OutOfMemoryError e) {
@@ -1806,6 +1813,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void run() {
+            Log.e(TAG, "onAttach: ClassCastException: " + mImage );
 
             if(mImage != null){
                 ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();

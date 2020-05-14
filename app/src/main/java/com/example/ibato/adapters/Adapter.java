@@ -87,7 +87,10 @@ public class Adapter extends BaseAdapter {
         if (models.get(position).getIsEdible()) {
             mStatus.setImageResource(R.drawable.ic_check_black_24dp);
         } else {
-            mStatus.setImageResource(R.drawable.ic_close_black_24dp);
+            if (models.get(position).getTitle().equals("Unknown"))
+                mStatus.setImageResource(R.drawable.ic_help_outline_black_24dp);
+            else
+                mStatus.setImageResource(R.drawable.ic_close_black_24dp);
         }
 
         //Loading image using Picasso
