@@ -1813,8 +1813,6 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void run() {
-            Log.e(TAG, "onAttach: ClassCastException: " + mImage );
-
             if(mImage != null){
                 ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
                 byte[] bytes = new byte[buffer.remaining()];
