@@ -791,7 +791,8 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                         } else {
                             runPrecaptureSequence();
                         }
-                    } else if (afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED) {
+                    } else if (afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED ||
+                            afState == CaptureResult.CONTROL_AE_STATE_SEARCHING) {
                         restartFocus();
                     } else if(afState == CaptureResult.CONTROL_AF_STATE_INACTIVE){
                         mState = STATE_PICTURE_TAKEN;
