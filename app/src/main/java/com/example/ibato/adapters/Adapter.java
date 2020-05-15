@@ -84,13 +84,15 @@ public class Adapter extends BaseAdapter {
         /* Populate data on layout */
         mTitle.setText(models.get(position).getTitle());
         mDescr.setText(models.get(position).getDesc());
-        if (models.get(position).getIsEdible()) {
+        if (models.get(position).getIsEdible().equals("Can")) {
             mStatus.setImageResource(R.drawable.ic_check_black_24dp);
-        } else {
+        } else if (models.get(position).getIsEdible().equals("Cannot")) {
             if (models.get(position).getTitle().equals("Unknown"))
                 mStatus.setImageResource(R.drawable.ic_help_outline_black_24dp);
             else
                 mStatus.setImageResource(R.drawable.ic_close_black_24dp);
+        } else {
+            mStatus.setImageResource(R.drawable.ic_warning_black_24dp);
         }
 
         //Loading image using Picasso

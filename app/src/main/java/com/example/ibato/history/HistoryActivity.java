@@ -79,7 +79,7 @@ public class HistoryActivity extends Fragment {
         progressBar = view.findViewById(R.id.loading);
         viewPager = view.findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
-//        viewPager.setPadding(130, 0, 130, 0);
+        viewPager.setPadding(0, 0, 0, 180);
 
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mStorage = FirebaseStorage.getInstance();

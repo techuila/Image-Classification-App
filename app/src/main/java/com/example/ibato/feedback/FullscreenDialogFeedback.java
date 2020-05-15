@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.example.ibato.Utils.Utils.getDatabase;
+import static com.example.ibato.Utils.Utils.isNetworkAvailable;
 
 public class FullscreenDialogFeedback extends DialogFragment implements View.OnClickListener {
 
@@ -155,7 +156,7 @@ public class FullscreenDialogFeedback extends DialogFragment implements View.OnC
                 break;
 
             case R.id.submit_button:
-                saveChanges(getArguments().getBoolean("isUserHasFeedback"));
+                saveChanges(getArguments().getBoolean("isUserHasFeedback"), v);
                 break;
 
             case R.id.delete_button:
@@ -182,37 +183,41 @@ public class FullscreenDialogFeedback extends DialogFragment implements View.OnC
     }
 
 
-    private void saveChanges(boolean isUserHasFeedback) {
-        String feedback_text = mFeedback.getText().toString();
-        Float rating = mRatingBar.getRating();
-        String date = getCurrentDate();
-        String photoUrl = "";
-        if (mAuth.getCurrentUser().getPhotoUrl() != null) {
-            photoUrl = mAuth.getCurrentUser().getPhotoUrl().toString();
-        }
-        Feedback feedback = new Feedback(userID, photoUrl, username, feedback_text, date, rating);
+    private void saveChanges(boolean isUserHasFeedback, View view) {
+        if (isNetworkAvailable(view.getContext())) {
+            String feedback_text = mFeedback.getText().toString();
+            Float rating = mRatingBar.getRating();
+            String date = getCurrentDate();
+            String photoUrl = "";
+            if (mAuth.getCurrentUser().getPhotoUrl() != null) {
+                photoUrl = mAuth.getCurrentUser().getPhotoUrl().toString();
+            }
+            Feedback feedback = new Feedback(userID, photoUrl, username, feedback_text, date, rating);
 
-        if (isUserHasFeedback) {
-            /* Edit existing feedback */
+            if (isUserHasFeedback) {
+                /* Edit existing feedback */
 
-            mDatabaseRef.child(getArguments().getString("key")).setValue(feedback, ((databaseError, databaseReference) -> {
-                mIMainActivity.showProgressDialog(true);
-
-                validateOnComplete(databaseError, "Feedback Successfully Updated!");
-            }));
-
-        } else {
-            /* Add new feedback */
-
-            String feedbackID = mDatabaseRef.push().getKey();
-            mDatabaseRef.child(feedbackID).setValue(feedback, new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                mDatabaseRef.child(getArguments().getString("key")).setValue(feedback, ((databaseError, databaseReference) -> {
                     mIMainActivity.showProgressDialog(true);
 
-                    validateOnComplete(databaseError, "Feedback Successfully Submitted!");
-                }
-            });
+                    validateOnComplete(databaseError, "Feedback Successfully Updated!");
+                }));
+
+            } else {
+                /* Add new feedback */
+
+                String feedbackID = mDatabaseRef.push().getKey();
+                mDatabaseRef.child(feedbackID).setValue(feedback, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                        mIMainActivity.showProgressDialog(true);
+
+                        validateOnComplete(databaseError, "Feedback Successfully Submitted!");
+                    }
+                });
+            }
+        } else {
+            validateOnComplete(null, "You are offline, please try again later.");
         }
     }
 

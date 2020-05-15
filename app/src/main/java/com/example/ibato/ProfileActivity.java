@@ -48,6 +48,7 @@ import com.google.firebase.storage.UploadTask;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.example.ibato.Utils.Utils.getDatabase;
+import static com.example.ibato.Utils.Utils.isNetworkAvailable;
 
 public class ProfileActivity extends Fragment implements
         View.OnClickListener,
@@ -182,58 +183,62 @@ public class ProfileActivity extends Fragment implements
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Log.d(TAG, mAuth.getCurrentUser().getEmail());
-                                Log.d(TAG, mCurrentPassword.getText().toString());
-                                AuthCredential credential = EmailAuthProvider
-                                        .getCredential(mAuth.getCurrentUser().getEmail(), mCurrentPassword.getText().toString());
+                                if (isNetworkAvailable(v.getContext())) {
+                                    Log.d(TAG, mAuth.getCurrentUser().getEmail());
+                                    Log.d(TAG, mCurrentPassword.getText().toString());
+                                    AuthCredential credential = EmailAuthProvider
+                                            .getCredential(mAuth.getCurrentUser().getEmail(), mCurrentPassword.getText().toString());
 
-                                mAuth.getCurrentUser().reauthenticate(credential)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                Log.d(TAG, "User re-authenticated.");
+                                    mAuth.getCurrentUser().reauthenticate(credential)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    Log.d(TAG, "User re-authenticated.");
 
-                                                if (mPassword.getText().toString().isEmpty()) {
-                                                    mPassword.setError("Password is required");
-                                                    mPassword.requestFocus();
-                                                    return;
-                                                } else if (mPassword.getText().toString().length() < 6) {
-                                                    mPassword.setError("Minimum length of password should be 6");
-                                                    mPassword.requestFocus();
-                                                    return;
+                                                    if (mPassword.getText().toString().isEmpty()) {
+                                                        mPassword.setError("Password is required");
+                                                        mPassword.requestFocus();
+                                                        return;
+                                                    } else if (mPassword.getText().toString().length() < 6) {
+                                                        mPassword.setError("Minimum length of password should be 6");
+                                                        mPassword.requestFocus();
+                                                        return;
+                                                    }
+
+                                                    /* Compares the password and confirm password placed by the user */
+                                                    if (mPassword.getText().toString().equals(mConfirmPassword.getText().toString())) {
+                                                        /* Update Password */
+                                                        mAuth.getCurrentUser().updatePassword(mPassword.getText().toString())
+                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                        aDialog.dismiss();
+                                                                        Toast.makeText(ProfileActivity.this.getActivity(), "Successfully Changed Password!", Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        Toast.makeText(ProfileActivity.this.getActivity(), "Change Password Failed!", Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                });
+                                                    } else {
+                                                        mConfirmPassword.setError("Password doesn't match!");
+                                                        mConfirmPassword.requestFocus();
+                                                    }
+
                                                 }
-
-                                                /* Compares the password and confirm password placed by the user */
-                                                if (mPassword.getText().toString().equals(mConfirmPassword.getText().toString())) {
-                                                    /* Update Password */
-                                                    mAuth.getCurrentUser().updatePassword(mPassword.getText().toString())
-                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<Void> task) {
-                                                                    aDialog.dismiss();
-                                                                    Toast.makeText(ProfileActivity.this.getActivity(), "Successfully Changed Password!", Toast.LENGTH_SHORT).show();
-                                                                }
-                                                            })
-                                                            .addOnFailureListener(new OnFailureListener() {
-                                                                @Override
-                                                                public void onFailure(@NonNull Exception e) {
-                                                                    Toast.makeText(ProfileActivity.this.getActivity(), "Change Password Failed!", Toast.LENGTH_SHORT).show();
-                                                                }
-                                                            });
-                                                } else {
-                                                    mConfirmPassword.setError("Password doesn't match!");
-                                                    mConfirmPassword.requestFocus();
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    mCurrentPassword.setError("Password is incorrect!");
+                                                    mCurrentPassword.requestFocus();
                                                 }
-
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                mCurrentPassword.setError("Password is incorrect!");
-                                                mCurrentPassword.requestFocus();
-                                            }
-                                        });
+                                            });
+                                } else {
+                                    Toast.makeText(v.getContext(), "You are offline, please try again later.", Toast.LENGTH_LONG).show();
+                                }
 
                             }
                         });
@@ -311,28 +316,34 @@ public class ProfileActivity extends Fragment implements
 
     private void handleUpload(Uri uri) {
         mIMainActivity.showProgressDialog(true);
-        final StorageReference reference = FirebaseStorage.getInstance().getReference("profileImages").child(mAuth.getCurrentUser().getUid()).child(uri.getLastPathSegment());
 
-        reference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
-                reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        mIMainActivity.showProgressDialog(false);
-                        Glide.with(ProfileActivity.this).load(uri).into(mProfileImage);
-                        Log.d("tag", "onSuccess: Uploaded Image URl is " + uri.toString());
-                        setUserProfileUrl(uri);
-                    }
-                });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ProfileActivity.this.getActivity(), "Update Failed!", Toast.LENGTH_SHORT).show();
-                mIMainActivity.showProgressDialog(false);
-            }
-        });
+        if (isNetworkAvailable(ProfileActivity.this.getActivity())) {
+            final StorageReference reference = FirebaseStorage.getInstance().getReference("profileImages").child(mAuth.getCurrentUser().getUid()).child(uri.getLastPathSegment());
+
+            reference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
+                    reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            mIMainActivity.showProgressDialog(false);
+                            Glide.with(ProfileActivity.this).load(uri).into(mProfileImage);
+                            Log.d("tag", "onSuccess: Uploaded Image URl is " + uri.toString());
+                            setUserProfileUrl(uri);
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(ProfileActivity.this.getActivity(), "Update Failed!", Toast.LENGTH_SHORT).show();
+                    mIMainActivity.showProgressDialog(false);
+                }
+            });
+        } else {
+            Toast.makeText(ProfileActivity.this.getActivity(), "You are offline, please try again later.", Toast.LENGTH_LONG).show();
+            mIMainActivity.showProgressDialog(false);
+        }
     }
 
     private void setUserProfileUrl(final Uri uri) {

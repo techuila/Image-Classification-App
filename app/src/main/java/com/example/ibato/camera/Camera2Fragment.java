@@ -18,6 +18,7 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -70,7 +71,9 @@ import com.example.ibato.MainActivity;
 import com.example.ibato.R;
 import com.example.ibato.interfaces.ICallback;
 import com.example.ibato.interfaces.IMainActivity;
+import com.example.ibato.models.Feedback;
 import com.example.ibato.models.Model;
+import com.example.ibato.models.Vegetable;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -115,6 +118,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import static com.example.ibato.Utils.Utils.getDatabase;
+import static com.example.ibato.Utils.Utils.isNetworkAvailable;
 
 public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
@@ -287,6 +291,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef, mVegRef;
+    private Vegetable vegetable;
 
     public static Camera2Fragment newInstance(){
         return new Camera2Fragment();
@@ -590,20 +595,6 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public static boolean isNetworkAvailable(Context con) {
-        try {
-            ConnectivityManager cm = (ConnectivityManager) con
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-
-            if (networkInfo != null && networkInfo.isConnected()) {
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     private void uploadFile() {
         mIMainActivity.showProgressDialog(true);
@@ -618,8 +609,27 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                         @Override
                         public void onSuccess(Uri uri) {
                             Log.d("tag", "onSuccess: Uploaded Image URl is " + uri.toString());
+                            String descr = "", isEdible = "";
 
-                            Model model = new Model(mIMainActivity.getUserID(), uri.toString(), topLables[2], "Carrots can be eaten something chu chu", isEdible);
+                            // If vegetable is found in database
+                            if (vegetable != null) {
+                                descr = vegetable.getDescr();
+
+                                if (vegetable.getIsLimit())
+                                    isEdible = "Can";
+                                else
+                                    isEdible = "Limit";
+                            } else { // If vegetable is not found in database
+                                isEdible = "Cannot";
+
+                                if (topLables[2] == "Unknown") {
+                                    descr = "Subject was not found on the vegetable list";
+                                } else {
+                                    descr = "Cannot be eaten";
+                                }
+                            }
+
+                            Model model = new Model(mIMainActivity.getUserID(), uri.toString(), topLables[2], descr, isEdible);
                             String uploadId = mDatabaseRef.push().getKey();
                             mDatabaseRef.child(mIMainActivity.getUserID()).child(uploadId).setValue(model);
 
@@ -1642,6 +1652,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         mVegRef.orderByChild("name").equalTo(topLables[2]).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                vegetable = null;
                 if (Integer.parseInt(topConfidence[2].substring(0, topConfidence[2].length() - 1)) < -300) {
                     topLables[2] = "Unknown";
                     mStatus.setImageResource(R.drawable.ic_help_outline_black_24dp);
@@ -1650,7 +1661,15 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                     mDescr.setVisibility(View.VISIBLE);
                 } else {
                     if (dataSnapshot.exists()) {
-                        mStatus.setImageResource(R.drawable.ic_check_black_24dp);
+                        vegetable = dataSnapshot.getValue(Vegetable.class);
+
+                        if (vegetable.getIsLimit()) {
+                            mStatus.setImageResource(R.drawable.ic_warning_black_24dp);
+                        } else {
+                            mStatus.setImageResource(R.drawable.ic_check_black_24dp);
+                        }
+
+                        mDescr.setText(vegetable.getDescr());
                         mDescr.setVisibility(View.INVISIBLE);
                         isEdible = true;
                     } else {

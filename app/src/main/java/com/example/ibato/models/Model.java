@@ -9,13 +9,13 @@ public class Model {
     private String desc;
     private String mKey;
     private String userID;
-    private Boolean isEdible;
+    private String isEdible;
 
     public Model() {
         //empty constructor needed
     }
 
-    public Model(String userID, String image, String title, String desc, Boolean isEdible) {
+    public Model(String userID, String image, String title, String desc, String isEdible) {
         this.userID = userID;
         this.image = image;
         this.title = title;
@@ -55,11 +55,11 @@ public class Model {
         this.desc = desc;
     }
 
-    public Boolean getIsEdible() {
+    public String getIsEdible() {
         return isEdible;
     }
 
-    public void setIsEdible(Boolean isEdible) {
+    public void setIsEdible(String isEdible) {
         this.isEdible = isEdible;
     }
 
