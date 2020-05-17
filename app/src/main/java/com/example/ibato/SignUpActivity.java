@@ -6,7 +6,9 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.ibato.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,8 +35,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     public static final String TAG = "SignUpActivity";
     private ProgressBar progressBar;
+    private TextView mTerms;
     private TextInputEditText editFullName, editTextEmail, editTextPassword, editTextConfirmPassword;
     private Button loginBtn, signUpBtn;
+    private CheckBox checkbox;
     String userID;
 
 
@@ -56,10 +61,13 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         editTextEmail = (TextInputEditText) findViewById(R.id.email_input);
         editTextPassword = (TextInputEditText) findViewById(R.id.password_input);
         editTextConfirmPassword = (TextInputEditText) findViewById(R.id.confirm_password_input);
+        checkbox = (CheckBox) findViewById(R.id.checkBox);
+        mTerms = (TextView) findViewById(R.id.checkbox_sub_link);
         signUpBtn = (Button) findViewById(R.id.sign_up);
         progressBar = (ProgressBar) findViewById(R.id.loading);
 
         /* Action Listeners */
+        mTerms.setOnClickListener(this);
         loginBtn.setOnClickListener(this);
         signUpBtn.setOnClickListener(this);
     }
@@ -67,7 +75,16 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View view) {
         if (view == loginBtn) handleLogin();
-        else if(view == signUpBtn) handleSignUp();
+        else if (view == signUpBtn) handleSignUp();
+        else if (view == mTerms) showTerms();
+    }
+
+    private void showTerms() {
+        new MaterialAlertDialogBuilder(this, R.style.custom_material_theme)
+                .setTitle("Terms and Conditions")
+                .setMessage(R.string.terms_and_conditions)
+                .setNegativeButton("Close", null )
+                .show();
     }
 
     private void handleLogin() {
@@ -120,6 +137,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         if (password.length() < 6) {
             editTextPassword.setError("Minimum lenght of password should be 6");
             editTextPassword.requestFocus();
+            return;
+        }
+
+        if (!checkbox.isChecked()) {
+            checkbox.setError("Please accept Terms and Conditions");
+            checkbox.requestFocus();
             return;
         }
 

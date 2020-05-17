@@ -52,7 +52,13 @@
     <string name="logout">Logout</string>
     <string name="forgot">Forgot Password?</string>
 
-    <string name="app_version">v3.1</string>
+    <string name="app_version">v3.5</string>
 
-    <string name="app_description">iBato Application is an application that can be used by Hemodialysis Patients, the vegetables that the application can only recognize are the vegetables that are only can be found around in Zamboanga City and thus help hemodialysis patients with their Vegetable Dietary Restriction.</string>
+    <string name="app_description">At ibato, we believe that through modern technology we can lessen the loads and stress of people who undergo hemodialysis, which we have come up with the idea of classifying their dietary restriction in vegetable and fruits due to that their kidneys cannot get rid of waste products and fluids from their blood.
+\nAt first, we thought about how we will be able to implement it, especially on classifying the dietary restriction of vegetables and fruits. As we do research we found out about Artificial Intelligence is which has helped us in finding the answer to our problem.\n
+\nWe dedicate this application to our thesis adviser Ms. Angeline Chrisette Olegario that has helped and motivate us to accomplish this application.</string>
+
+    <string name="terms_and_conditions">The information provided by our application is for general information purposes only. All information on the application is provided in good faith, however, we make no representation or warranty of any kind, express or implied, regarding the accuracy, adequacy, validity, reliability, availability, or completeness of any information on our mobile application.
+\n\nUnder no circumstances shall we have any liability to you for any loss or damage of any kind incurred as a result of the use of our application and your reliance on any kind of information on our mobile application is solely at your own risk.
+\n\nThe content is not intended to be a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health providers with any questions you may have regarding a medical condition.</string>
 </resources>

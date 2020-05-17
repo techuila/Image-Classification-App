@@ -4,6 +4,8 @@ package com.example.ibato.history;
 import android.animation.ArgbEvaluator;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +27,9 @@ import com.example.ibato.interfaces.IMainActivity;
 import com.example.ibato.models.Model;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,6 +63,8 @@ public class HistoryActivity extends Fragment {
     private String userID;
     private ProgressBar progressBar;
     private RelativeLayout mEmpty;
+    private TextInputEditText mSearch;
+
 
 
     @Nullable
@@ -77,6 +83,7 @@ public class HistoryActivity extends Fragment {
 
         mEmpty = view.findViewById(R.id.empty_content);
         progressBar = view.findViewById(R.id.loading);
+        mSearch = view.findViewById(R.id.search_input_text);
         viewPager = view.findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(0, 0, 0, 180);
@@ -86,36 +93,18 @@ public class HistoryActivity extends Fragment {
         mDatabaseRef = getDatabase().getReference("uploads").child(userID);
 
         progressBar.setVisibility(View.VISIBLE);
-        mDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // Clear list of photos if there is new data
-                models.clear();
 
-                Log.d(TAG, "NAKU POOOOO=========");
+        search("");
 
-                if (dataSnapshot.getChildrenCount() == 0) {
-                    mEmpty.setVisibility(View.VISIBLE);
-                } else {
-                    mEmpty.setVisibility(View.GONE);
-                }
+        mSearch.addTextChangedListener(new TextWatcher() {
 
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Model model = postSnapshot.getValue(Model.class);
-                    model.setKey(postSnapshot.getKey());
-                    models.add(model);
-                }
-
-                viewPager.setAdapter(adapter);
-                progressBar.setVisibility(View.GONE);
-                adapter.notifyDataSetChanged();
+            public void afterTextChanged(Editable s) {
+                search(s.toString());
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
 
 //        Integer[] colors_temp = {
@@ -126,7 +115,7 @@ public class HistoryActivity extends Fragment {
 //        };
 //
 //        colors = colors_temp;
-
+//
 //        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 //            @Override
 //            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -157,6 +146,44 @@ public class HistoryActivity extends Fragment {
 //
 //            }
 //        });
+    }
+
+    public void search(String text){
+        mDatabaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Clear list of photos if there is new data
+                models.clear();
+
+                Log.d(TAG, "NAKU POOOOO=========");
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    System.out.println(postSnapshot.child("title").getValue().toString());
+                    System.out.println(text);
+                    if (postSnapshot.child("title").getValue().toString().contains(text) || text.equals("")) {
+                        Model model = postSnapshot.getValue(Model.class);
+                        model.setKey(postSnapshot.getKey());
+                        models.add(model);
+                    }
+                }
+
+                if (models.size() == 0) {
+                    mEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    mEmpty.setVisibility(View.GONE);
+                }
+
+                viewPager.setAdapter(adapter);
+                progressBar.setVisibility(View.GONE);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
