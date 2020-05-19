@@ -1,7 +1,6 @@
 package com.example.ibato;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +21,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.ibato.camera.Camera2Fragment;
 import com.example.ibato.feedback.FeedbackActivity;
-import com.example.ibato.history.HistoryActivity;
+import com.example.ibato.home.HomeActivity;
 import com.example.ibato.interfaces.IMainActivity;
 import com.example.ibato.tutorial.TutorialActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,9 +30,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.io.IOException;
 
 import static com.example.ibato.Utils.Utils.getDatabase;
 import static com.example.ibato.Utils.Utils.hideKeyboard;
@@ -174,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements
                 // Open the Camera
 //                startCamera2();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.camera_container, HistoryActivity.newInstance(), "HistoryFragment");
+                fragmentTransaction.replace(R.id.camera_container, HomeActivity.newInstance(), "HistoryFragment");
                 fragmentTransaction.commit();
             }
             else{
@@ -377,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
 
                 case R.id.nav_gallery: {
-                    openFragment(item, HistoryActivity.class,"HistoryFragment");
+                    openFragment(item, HomeActivity.class,"HistoryFragment");
                     break;
                 }
 

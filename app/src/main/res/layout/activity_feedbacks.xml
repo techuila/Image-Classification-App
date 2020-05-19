@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="4dp"
-        android:text="Total App Rating"
+        android:text="Average App Rating"
         app:layout_constraintStart_toStartOf="@+id/rating_text"
         app:layout_constraintTop_toBottomOf="@+id/rating_text" />
 

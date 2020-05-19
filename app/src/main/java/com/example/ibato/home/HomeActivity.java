@@ -1,8 +1,10 @@
-package com.example.ibato.history;
+package com.example.ibato.home;
 
 
 import android.animation.ArgbEvaluator;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,21 +21,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import com.example.ibato.R;
 import com.example.ibato.adapters.Adapter;
+import com.example.ibato.interfaces.IHomeActivity;
 import com.example.ibato.interfaces.IMainActivity;
 import com.example.ibato.models.Model;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -43,9 +43,9 @@ import java.util.List;
 
 import static com.example.ibato.Utils.Utils.getDatabase;
 
-public class HistoryActivity extends Fragment {
-    public static HistoryActivity newInstance() {
-        return new HistoryActivity();
+public class HomeActivity extends Fragment implements IHomeActivity {
+    public static HomeActivity newInstance() {
+        return new HomeActivity();
     }
 
     ListView viewPager;
@@ -57,7 +57,7 @@ public class HistoryActivity extends Fragment {
     private Button mBackButton;
 
     private IMainActivity mIMainActivity;
-    private static final String TAG = "HistoryActivity";
+    private static final String TAG = "HomeActivity";
     private DatabaseReference mDatabaseRef;
     private FirebaseStorage mStorage;
     private String userID;
@@ -79,7 +79,7 @@ public class HistoryActivity extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         models = new ArrayList<>();
-        adapter = new Adapter(models, view.getContext(), HistoryActivity.this);
+        adapter = new Adapter(models, view.getContext(), HomeActivity.this);
 
         mEmpty = view.findViewById(R.id.empty_content);
         progressBar = view.findViewById(R.id.loading);
@@ -91,6 +91,7 @@ public class HistoryActivity extends Fragment {
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mStorage = FirebaseStorage.getInstance();
         mDatabaseRef = getDatabase().getReference("uploads").child(userID);
+        mDatabaseRef.keepSynced(true);
 
         progressBar.setVisibility(View.VISIBLE);
 
@@ -196,28 +197,60 @@ public class HistoryActivity extends Fragment {
         }
     }
 
-    public void deleteData(Model model) {
-        mIMainActivity.showProgressDialog(true);
-        final String modelKey = model.getKey();
+    @Override
+    public void deleteData(String key, String image, Context context) {
+        final AlertDialog builder = new AlertDialog.Builder(context)
+                .setTitle("Confirmation")
+                .setMessage("Are you sure you want to permanently delete this data?")
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mIMainActivity.showProgressDialog(true);
+                        final String modelKey = key;
 
-        // Gets the image reference from the selected model
-        StorageReference imageRef = mStorage.getReferenceFromUrl(model.getImage());
-        // Deletes the image on the firebase storage
-        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        // Gets the image reference from the selected model
+                        StorageReference imageRef = mStorage.getReferenceFromUrl(image);
+                        // Deletes the image on the firebase storage
+                        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                // Deletes the data on the firebase database
+                                mDatabaseRef.child(modelKey).removeValue();
+                                mIMainActivity.showProgressDialog(false);
+                                Toast.makeText(getActivity(), "Data Successfully Deleted!", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                mIMainActivity.showProgressDialog(false);
+                                Toast.makeText(getActivity(), "Data failed to delete!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+
+        builder.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
-            public void onSuccess(Void aVoid) {
-                // Deletes the data on the firebase database
-                mDatabaseRef.child(modelKey).removeValue();
-                mIMainActivity.showProgressDialog(false);
-                Toast.makeText(getActivity(), "Data Successfully Deleted!", Toast.LENGTH_SHORT).show();
-            }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                mIMainActivity.showProgressDialog(false);
-                Toast.makeText(getActivity(), "Data failed to delete!", Toast.LENGTH_SHORT).show();
+            public void onShow(DialogInterface dialog) {
+                builder.getButton(AlertDialog.BUTTON_NEGATIVE).setBackgroundColor(getContext().getResources().getColor(R.color.transparent));
+                builder.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+
+                builder.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(getContext().getResources().getColor(R.color.transparent));
+                builder.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
             }
         });
+
+
+
+        builder.show();
     }
 }

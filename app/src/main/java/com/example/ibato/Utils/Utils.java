@@ -2,11 +2,23 @@ package com.example.ibato.Utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
+import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
+import com.example.ibato.R;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class Utils {
@@ -33,6 +45,32 @@ public class Utils {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static void loadImage(Context context, String image, ProgressBar progressBar, ImageView mImage) {
+        if (image != null && !image.equals(""))
+            Glide.with(context)
+                    .load(image)
+                    .apply(
+                            new RequestOptions()
+                                    .error(R.drawable.not_found)
+                    )
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            progressBar.setVisibility(View.GONE);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            progressBar.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
+                    .into(mImage);
+        else
+            mImage.setImageResource(R.drawable.no_img);
     }
 
     public static void hideKeyboard(Activity activity) {

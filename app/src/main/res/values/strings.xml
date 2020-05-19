@@ -52,7 +52,9 @@
     <string name="logout">Logout</string>
     <string name="forgot">Forgot Password?</string>
 
-    <string name="app_version">v3.5</string>
+    <string name="app_version">v3.7</string>
+
+    <string name="lorem_ispum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam elementum auctor lacus, vitae suscipit mi accumsan a. Nunc non pharetra nibh. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas sit amet risus a arcu dictum ullamcorper quis non ante. Suspendisse potenti. Cras pulvinar vehicula orci, ac pharetra urna blandit sit amet. Vivamus varius ligula lacus, vestibulum cursus erat tempor nec. Nulla et libero non neque consectetur ultrices. Vivamus ac ipsum felis.</string>
 
     <string name="app_description">At ibato, we believe that through modern technology we can lessen the loads and stress of people who undergo hemodialysis, which we have come up with the idea of classifying their dietary restriction in vegetable and fruits due to that their kidneys cannot get rid of waste products and fluids from their blood.
 \nAt first, we thought about how we will be able to implement it, especially on classifying the dietary restriction of vegetables and fruits. As we do research we found out about Artificial Intelligence is which has helped us in finding the answer to our problem.\n

@@ -46,11 +46,11 @@
         </activity>
 
         <activity
-            android:name=".history.HistoryActivity">
+            android:name=".home.HomeActivity">
         </activity>
 
         <activity
-            android:name=".history.DetailActivity">
+            android:name=".home.DetailActivity">
         </activity>
 
         <activity

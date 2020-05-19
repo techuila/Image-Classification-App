@@ -5,42 +5,32 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.viewpager.widget.PagerAdapter;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.example.ibato.history.DetailActivity;
-import com.example.ibato.history.HistoryActivity;
+import com.example.ibato.home.DetailActivity;
+import com.example.ibato.home.HomeActivity;
 import com.example.ibato.R;
+import com.example.ibato.interfaces.IHomeActivity;
 import com.example.ibato.models.Model;
 
-import java.io.IOException;
 import java.util.List;
+
+import static com.example.ibato.Utils.Utils.loadImage;
 
 public class Adapter extends BaseAdapter {
 
     private List<Model> models;
     private LayoutInflater layoutInflater;
     private Context context;
-    private HistoryActivity fragment;
+    private HomeActivity fragment;
 
-    public Adapter(List<Model> models, Context context, HistoryActivity fragment) {
+    public Adapter(List<Model> models, Context context, HomeActivity fragment) {
         this.models = models;
         this.context = context;
         this.fragment = fragment;
@@ -86,48 +76,33 @@ public class Adapter extends BaseAdapter {
         mTitle.setText(models.get(position).getTitle());
         mDescr.setText(models.get(position).getDesc());
         mTitleSub.setText("");
+        int statusIcon;
         if (models.get(position).getIsEdible().equals("Can")) {
-            mStatus.setImageResource(R.drawable.ic_check_black_24dp);
+            statusIcon = R.drawable.ic_check_black_24dp;
         } else if (models.get(position).getIsEdible().equals("Cannot")) {
             if (models.get(position).getTitle().equals("Unknown"))
-                mStatus.setImageResource(R.drawable.ic_help_outline_black_24dp);
+                statusIcon = R.drawable.ic_help_outline_black_24dp;
             else
-                mStatus.setImageResource(R.drawable.ic_close_black_24dp);
+            statusIcon = R.drawable.ic_close_black_24dp;
         } else {
             mTitleSub.setText("(Avoid or Limit)");
-            mStatus.setImageResource(R.drawable.ic_warning_black_24dp);
+            statusIcon = R.drawable.ic_warning_black_24dp;
         }
 
         //Loading image using Picasso
-        if (models.get(position).getImage() != null && !models.get(position).getImage().equals(""))
-            Glide.with(context)
-                    .load(models.get(position).getImage())
-                    .apply(
-                        new RequestOptions()
-                                .error(R.drawable.not_found)
-                    )
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            progressBar.setVisibility(View.GONE);
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            progressBar.setVisibility(View.GONE);
-                            return false;
-                        }
-                    })
-                    .into(mImage);
-        else
-            mImage.setImageResource(R.drawable.no_img);
+        mStatus.setImageResource(statusIcon);
+        loadImage(context, models.get(position).getImage(), progressBar, mImage);
 
 
         /* Click to expand event */
         view.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
-            intent.putExtra("param", models.get(position).getTitle());
+            intent.putExtra("title", models.get(position).getTitle());
+            intent.putExtra("descr", models.get(position).getDesc());
+            intent.putExtra("image", models.get(position).getImage());
+            intent.putExtra("key", models.get(position).getKey());
+            intent.putExtra("isEdible", models.get(position).getIsEdible());
+            intent.putExtra("icon", statusIcon);
             context.startActivity(intent);
             // finish();
         });
