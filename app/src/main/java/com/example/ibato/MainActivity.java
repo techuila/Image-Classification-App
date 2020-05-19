@@ -36,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.IOException;
 
 import static com.example.ibato.Utils.Utils.getDatabase;
+import static com.example.ibato.Utils.Utils.hideKeyboard;
 
 public class MainActivity extends AppCompatActivity implements
         IMainActivity,
@@ -120,6 +121,8 @@ public class MainActivity extends AppCompatActivity implements
                 if (f.getTag() == getString(R.string.fragment_camera2)) {
                     mBottomBar.getMenu().getItem(2).setChecked(true);
                     mMainButton.setImageResource(R.drawable.capture2);
+
+                    hideKeyboard(MainActivity.this);
                 } else if (f.getTag() == "ProfileFragment") {
                     mMainButton.setImageResource(R.drawable.ic_camera);
                     mBottomBar.getMenu().getItem(4).setChecked(true);

@@ -361,9 +361,23 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         mDatabaseRef = getDatabase().getReference("uploads");
         mVegRef = getDatabase().getReference("vegetables");
+        mVegRef.keepSynced(true);
 
         setMaxSizes();
         resetIconVisibilities();
+    }
+
+    /**
+     * Could handle back press.
+     * @return true if back press was handled
+     */
+    public boolean onBackPressed() {
+        if (mIsImageAvailable) {
+            hideStillshotContainer();
+            return false;
+        }
+
+        return true;
     }
 
     private void initializeTflite() {
@@ -616,9 +630,9 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                                 descr = vegetable.getDescr();
 
                                 if (vegetable.getIsLimit())
-                                    isEdible = "Can";
-                                else
                                     isEdible = "Limit";
+                                else
+                                    isEdible = "Can";
                             } else { // If vegetable is not found in database
                                 isEdible = "Cannot";
 
@@ -1649,11 +1663,11 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         System.out.println("=========");
         System.out.println(res);
 
-        mVegRef.orderByChild("name").equalTo(topLables[2]).addListenerForSingleValueEvent(new ValueEventListener() {
+        mVegRef.orderByChild("name").equalTo(topLables[2]).addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 vegetable = null;
-                if (Integer.parseInt(topConfidence[2].substring(0, topConfidence[2].length() - 1)) < -300) {
+                if (Integer.parseInt(topConfidence[2].substring(0, topConfidence[2].length() - 1)) < -1000) {
                     topLables[2] = "Unknown";
                     mStatus.setImageResource(R.drawable.ic_help_outline_black_24dp);
                     mVegName.setText("Unknown");
@@ -1670,7 +1684,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                         }
 
                         mDescr.setText(vegetable.getDescr());
-                        mDescr.setVisibility(View.INVISIBLE);
+                        mDescr.setVisibility(View.VISIBLE);
                         isEdible = true;
                     } else {
                         mStatus.setImageResource(R.drawable.ic_close_black_24dp);
@@ -1681,6 +1695,21 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                 mVegName.setText(topLables[2]);
                 mCardContent.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override

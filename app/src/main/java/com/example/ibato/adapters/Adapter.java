@@ -70,12 +70,13 @@ public class Adapter extends BaseAdapter {
         }
 
         /* Declare components */
-        TextView mTitle, mDescr;
+        TextView mTitle, mTitleSub, mDescr;
         ImageView mStatus, mImage;
         ProgressBar progressBar;
 
         /* Initialize components */
         mTitle = view.findViewById(R.id.title_text);
+        mTitleSub = view.findViewById(R.id.title_text_sub);
         mDescr = view.findViewById(R.id.descr_text);
         mStatus = view.findViewById(R.id.status_img);
         mImage = view.findViewById(R.id.card_background);
@@ -84,6 +85,7 @@ public class Adapter extends BaseAdapter {
         /* Populate data on layout */
         mTitle.setText(models.get(position).getTitle());
         mDescr.setText(models.get(position).getDesc());
+        mTitleSub.setText("");
         if (models.get(position).getIsEdible().equals("Can")) {
             mStatus.setImageResource(R.drawable.ic_check_black_24dp);
         } else if (models.get(position).getIsEdible().equals("Cannot")) {
@@ -92,6 +94,7 @@ public class Adapter extends BaseAdapter {
             else
                 mStatus.setImageResource(R.drawable.ic_close_black_24dp);
         } else {
+            mTitleSub.setText("(Avoid or Limit)");
             mStatus.setImageResource(R.drawable.ic_warning_black_24dp);
         }
 

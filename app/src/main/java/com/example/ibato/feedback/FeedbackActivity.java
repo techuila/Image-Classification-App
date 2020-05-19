@@ -95,6 +95,7 @@ public class FeedbackActivity extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // Clear list of photos if there is new data
                 feedbacks.clear();
+                editFeedback = null;
 
                 if (dataSnapshot.getChildrenCount() == 0) {
                     checkIfUserHasFeedback(dataSnapshot, true);
@@ -131,8 +132,6 @@ public class FeedbackActivity extends Fragment {
     }
 
     private void checkIfUserHasFeedback(DataSnapshot dataSnapshot, boolean error) {
-        editFeedback = null;
-
         if (error) {
             editFeedback = null;
             isUserHasFeedback = false;
@@ -144,7 +143,10 @@ public class FeedbackActivity extends Fragment {
 
         if (dataSnapshot.child("userID").getValue().toString().equals(userID)) {
             editFeedback = dataSnapshot.getValue(Feedback.class);
+            System.out.println("NAKUUUUUUUUUU");
             editFeedback.setKey(dataSnapshot.getKey());
+            System.out.println(editFeedback.getKey());
+            System.out.println(editFeedback.getKey());
             isUserHasFeedback = true;
             mAddFeedback.setImageResource(R.drawable.ic_edit);
         }

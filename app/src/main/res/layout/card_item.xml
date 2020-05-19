@@ -46,7 +46,7 @@
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="100dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -72,8 +72,21 @@
                 android:text="John Doe"
                 android:textColor="@color/white"
                 android:textSize="14sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/descr_text"
                 app:layout_constraintStart_toEndOf="@+id/status_img" />
+
+            <TextView
+                android:id="@+id/title_text_sub"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="John Doe"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/descr_text"
+                app:layout_constraintStart_toEndOf="@+id/title_text" />
 
             <TextView
                 android:id="@+id/descr_text"
