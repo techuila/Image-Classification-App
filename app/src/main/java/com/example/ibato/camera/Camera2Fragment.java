@@ -1541,7 +1541,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                             scaledHeight
                     );
 
-                    classify(mCapturedBitmap);
+                    classify(background);
 
                     Glide.with(activity)
                             .setDefaultRequestOptions(options)
