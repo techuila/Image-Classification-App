@@ -215,7 +215,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
     private Image mCapturedImage;
 
-    private boolean mIsImageAvailable = false;
+    public boolean mIsImageAvailable = false;
 
     private IMainActivity mIMainActivity;
 
@@ -371,14 +371,14 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
      * Could handle back press.
      * @return true if back press was handled
      */
-    public boolean onBackPressed() {
-        if (mIsImageAvailable) {
-            hideStillshotContainer();
-            return false;
-        }
-
-        return true;
-    }
+//    public boolean onBackPressed() {
+//        if (mIsImageAvailable) {
+//            hideStillshotContainer();
+//            return false;
+//        }
+//
+//        return true;
+//    }
 
     private void initializeTflite() {
         // initialize array that holds image data
@@ -515,7 +515,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         setAutoFlash(mPreviewRequestBuilder);
     }
 
-    private void hideStillshotContainer(){
+    public void hideStillshotContainer(){
         mIMainActivity.showStatusBar();
         if(mIsImageAvailable){
             mMainButton.setImageResource(R.drawable.capture2);
@@ -1541,7 +1541,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                             scaledHeight
                     );
 
-                    classify(background);
+                    classify(mCapturedBitmap);
 
                     Glide.with(activity)
                             .setDefaultRequestOptions(options)
@@ -1564,6 +1564,9 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 //        mCaptureBtnContainer.setVisibility(View.INVISIBLE);
 
         mIMainActivity.hideStatusBar();
+
+        mCardContent.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
         closeCamera();
     }
 
@@ -1621,10 +1624,6 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     }
 
     private void classify(Bitmap bitmap_orig) {
-        mCardContent.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-
-        initializeTflite();
 
         Log.d(TAG, "DONE CAPTURE!");
         // get current bitmap from imageView
@@ -1663,9 +1662,9 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         System.out.println("=========");
         System.out.println(res);
 
-        mVegRef.orderByChild("name").equalTo(topLables[2]).addChildEventListener(new ChildEventListener() {
+        mVegRef.orderByChild("name").equalTo(topLables[2]).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 vegetable = null;
                 if (Integer.parseInt(topConfidence[2].substring(0, topConfidence[2].length() - 1)) < -1000) {
                     topLables[2] = "Unknown";
@@ -1675,7 +1674,10 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                     mDescr.setVisibility(View.VISIBLE);
                 } else {
                     if (dataSnapshot.exists()) {
-                        vegetable = dataSnapshot.getValue(Vegetable.class);
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            vegetable = postSnapshot.getValue(Vegetable.class);
+                        }
+
 
                         if (vegetable.getIsLimit()) {
                             mStatus.setImageResource(R.drawable.ic_warning_black_24dp);
@@ -1695,21 +1697,6 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                 mVegName.setText(topLables[2]);
                 mCardContent.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
             }
 
             @Override
@@ -1738,27 +1725,19 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
-
-        System.out.println("!!!");
-        System.out.println(width);
-        System.out.println(height);
         float scaleWidth = ((float) newWidth) / width;
         float scaleHeight = ((float) newHeight) / height;
         Matrix matrix = new Matrix();
         matrix.postScale(scaleWidth, scaleHeight);
         Bitmap resizedBitmap = Bitmap.createBitmap(
-            bm,
-            0,
-                0,
-            width,
-            height,
-            matrix,
-      false);
+                bm, 0, 0, width, height, matrix, false);
         return resizedBitmap;
     }
 
     // converts bitmap to byte array which is passed in the tflite graph
     private void convertBitmapToByteBuffer(Bitmap bitmap) {
+        System.out.println("=WHAT=");
+        System.out.println(imgData);
         if (imgData == null) {
             return;
         }
@@ -1943,6 +1922,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         super.onAttach(context);
         try{
             mIMainActivity = (IMainActivity) getActivity();
+            initializeTflite();
         }catch (ClassCastException e){
             Log.e(TAG, "onAttach: ClassCastException: " + e.getMessage() );
         }

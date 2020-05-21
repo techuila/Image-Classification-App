@@ -340,15 +340,15 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        FeedbackActivity myFragment = (FeedbackActivity)getSupportFragmentManager().findFragmentByTag("FeedbackFragment");
-//        if (myFragment != null && myFragment.isVisible()) {
-//
-//        } else {
-//            super.onBackPressed();
-//        }
-//    }
+    @Override
+    public void onBackPressed() {
+        Camera2Fragment myFragment = (Camera2Fragment)getSupportFragmentManager().findFragmentByTag(getString(R.string.fragment_camera2));
+        if (myFragment != null && myFragment.isVisible() && ((Camera2Fragment) getFragment()).mIsImageAvailable) {
+            ((Camera2Fragment) getFragment()).hideStillshotContainer();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     @SuppressWarnings("StatementWIthEmptyBody")
     @Override
