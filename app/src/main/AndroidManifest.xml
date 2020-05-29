@@ -7,7 +7,7 @@
     <!-- Enable instant app support -->
     <dist:module dist:instant="true" />
 
-    <!-- Declare features -->
+    <!-- Declare features -->asdasdasdasdas
     <uses-feature android:name="android.hardware.camera"/>
 
     <!-- Declare permissions -->
