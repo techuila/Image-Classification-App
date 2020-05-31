@@ -36,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.example.ibato.Utils.Utils.getCurrentDate;
 import static com.example.ibato.Utils.Utils.getDatabase;
 import static com.example.ibato.Utils.Utils.isNetworkAvailable;
 
@@ -290,15 +291,6 @@ public class FullscreenDialogFeedback extends DialogFragment implements View.OnC
             anim.start();
         }
 
-    }
-
-    private String getCurrentDate() {
-        String pattern = "dd MMM yyyy";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
-        String date = simpleDateFormat.format(new Date());
-
-        return date;
     }
 
     private void showProgressDialog(Boolean show) {

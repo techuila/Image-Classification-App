@@ -21,6 +21,9 @@ import com.bumptech.glide.request.target.Target;
 import com.example.ibato.R;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Utils {
     private static FirebaseDatabase mDatabase;
 
@@ -45,6 +48,15 @@ public class Utils {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static String getCurrentDate() {
+        String pattern = "dd MMM yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
+        String date = simpleDateFormat.format(new Date());
+
+        return date;
     }
 
     public static void loadImage(Context context, String image, ProgressBar progressBar, ImageView mImage) {

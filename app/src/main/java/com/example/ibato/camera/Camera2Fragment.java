@@ -2036,12 +2036,14 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.ibato.MainActivity;
 import com.example.ibato.R;
 import com.example.ibato.interfaces.IMainActivity;
@@ -2080,6 +2082,8 @@ import java.util.PriorityQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
+
+import static com.example.ibato.Utils.Utils.getCurrentDate;
 import static com.example.ibato.Utils.Utils.getDatabase;
 import static com.example.ibato.Utils.Utils.isNetworkAvailable;
 
@@ -2136,8 +2140,11 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     private boolean flag = false;
     private IMainActivity mIMainActivity;
     private PreviewView previewView;
+    private RelativeLayout mFlashContainer;
     private ImageView mStillShotView, mFocus;
+    private ImageButton mFlashIcon;
     private Uri mCapturedUri;
+    private Boolean isFlashOn = false;
 
     /* CARD COMPONENTS */
     private RelativeLayout mCardContent;
@@ -2145,6 +2152,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     private TextView mVegName, mTextSub, mDescr;
     private ProgressBar progressBar;
     private ImageView mStatus, mClose;
+    Camera camera;
 
     /* FIREBASE VARIABLES */
     private StorageReference mStorageRef;
@@ -2161,6 +2169,8 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_camera2, container, false);
         previewView = view.findViewById(R.id.view_finder);
         mStillShotView = view.findViewById(R.id.stillshot_imageview);
+        mFlashContainer = view.findViewById(R.id.flash_container);
+        mFlashIcon = view.findViewById(R.id.flash_toggle);
         mFocus = view.findViewById(R.id.focus_support);
 
         /* Card Component */
@@ -2245,15 +2255,9 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                             flag = false;
                             mCardView.setVisibility(View.VISIBLE);
                             mFocus.setVisibility(View.GONE);
+                            mFlashContainer.setVisibility(View.GONE);
                         }
                         image.close();
-                    }
-                });
-
-                MainActivity.mMainButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        captureTriggered(imageCapture);
                     }
                 });
 
@@ -2266,12 +2270,42 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                 cameraProvider.unbindAll();
 
                 // Attach use cases to the camera with the same lifecycle owner
-                Camera camera = cameraProvider.bindToLifecycle(
+                camera = cameraProvider.bindToLifecycle(
                         ((LifecycleOwner) this),
                         cameraSelector,
                         preview,
                         imageAnalysis,
                         imageCapture);
+
+
+                MainActivity.mMainButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        captureTriggered(imageCapture);
+                    }
+                });
+
+                mFlashIcon.setOnClickListener(v -> {
+                    if (camera.getCameraInfo().hasFlashUnit()) {
+                        if (camera.getCameraInfo().getTorchState().getValue() == 0){
+                            camera.getCameraControl().enableTorch(true);
+                            isFlashOn = true;
+                        } else {
+                            camera.getCameraControl().enableTorch(false);
+                            isFlashOn = false;
+                        }
+
+                        setFlashIcon(camera.getCameraInfo().getTorchState().getValue() == 1);
+                    } else {
+                        if (getActivity() != null)
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showSnackBar("Flash is not available for this device.", Snackbar.LENGTH_SHORT);
+                                }
+                            });
+                    }
+                });
 
                 // Connect the preview use case to the previewView
                 preview.setSurfaceProvider(
@@ -2284,28 +2318,16 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         }, ContextCompat.getMainExecutor(getContext()));
     }
 
-    private Bitmap toBitmap(Image image) {
-        Image.Plane[] planes = image.getPlanes();
-        ByteBuffer yBuffer = planes[0].getBuffer();
-        ByteBuffer uBuffer = planes[1].getBuffer();
-        ByteBuffer vBuffer = planes[2].getBuffer();
-
-        int ySize = yBuffer.remaining();
-        int uSize = uBuffer.remaining();
-        int vSize = vBuffer.remaining();
-
-        byte[] nv21 = new byte[ySize + uSize + vSize];
-        //U and V are swapped
-        yBuffer.get(nv21, 0, ySize);
-        vBuffer.get(nv21, ySize, vSize);
-        uBuffer.get(nv21, ySize + vSize, uSize);
-
-        YuvImage yuvImage = new YuvImage(nv21, ImageFormat.NV21, image.getWidth(), image.getHeight(), null);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new Rect(0, 0, yuvImage.getWidth(), yuvImage.getHeight()), 75, out);
-
-        byte[] imageBytes = out.toByteArray();
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+    private void setFlashIcon(Boolean flashState){
+        if (flashState) {
+            Glide.with(getActivity())
+                    .load(R.drawable.ic_flash_off)
+                    .into(mFlashIcon);
+        } else {
+            Glide.with(getActivity())
+                    .load(R.drawable.ic_flash_on)
+                    .into(mFlashIcon);
+        }
     }
 
     public void captureTriggered(ImageCapture imageCapture) {
@@ -2314,7 +2336,6 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
             takePicture(imageCapture);
         } else {
             Log.d(TAG, "onClick: saving picture.");
-//            saveCapturedStillshotToDisk();
 
             // Upload file to firebase storage
             uploadFile();
@@ -2324,38 +2345,44 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     public void takePicture(ImageCapture imageCapture) {
         mIsImageAvailable = true;
         flag = true;
+        MainActivity.mMainButton.setEnabled(false);
 
         File file = new File(getActivity().getExternalFilesDir(null) , System.currentTimeMillis() + ".jpg");
         ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
         imageCapture.takePicture(outputFileOptions, Executors.newCachedThreadPool(), new ImageCapture.OnImageSavedCallback() {
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                        Log.d(TAG, "Image Display: trying to display image...");
-                        Log.d(TAG, "Image URI: " + file);
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                            Log.d(TAG, "Image Display: trying to display image...");
+                            Log.d(TAG, "Image URI: " + file);
 
-                        // Convert File to Uri
-                        mCapturedUri = Uri.fromFile(file);
+                            // Turn off torch
+                            camera.getCameraControl().enableTorch(false);
 
-                        // Classify Veggetable
-                        classify(bitmap);
+                            // Convert File to Uri
+                            mCapturedUri = Uri.fromFile(file);
 
-                        // Show preview
-                        hideShowPreview(bitmap);
-                    }
-                });
+                            // Classify Veggetable
+                            classify(bitmap);
+
+                            // Show preview
+                            hideShowPreview(bitmap);
+                        }
+                    });
             }
 
             @Override
             public void onError(ImageCaptureException error) {
-                getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        String msg = "Pic capture failed : " + error.getMessage();
-                        Toast.makeText(getContext(), msg,Toast.LENGTH_LONG).show();
-                    }
-                });
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            String msg = "Pic capture failed : " + error.getMessage();
+                            Toast.makeText(getContext(), msg,Toast.LENGTH_LONG).show();
+                        }
+                    });
             }
         });
     }
@@ -2367,20 +2394,26 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
             mStillShotView.setVisibility(View.VISIBLE);
             mCardView.setVisibility(View.VISIBLE);
             mClose.setVisibility(View.VISIBLE);
+            mFlashContainer.setVisibility(View.GONE);
             // Change main button icon to save
+            MainActivity.mMainButton.setEnabled(true);
             MainActivity.mMainButton.setImageResource(R.drawable.save);
         } else {
             // Hide Preview
             mIsImageAvailable = false;
             mStillShotView.setImageBitmap(null);
-            mStillShotView.setVisibility(View.INVISIBLE);
-            mCardView.setVisibility(View.INVISIBLE);
-            mClose.setVisibility(View.INVISIBLE);
-            mCardContent.setVisibility(View.INVISIBLE);
+            mStillShotView.setVisibility(View.GONE);
+            mCardView.setVisibility(View.GONE);
+            mClose.setVisibility(View.GONE);
+            mCardContent.setVisibility(View.GONE);
+            mFlashContainer.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.VISIBLE);
             mFocus.setVisibility(View.VISIBLE);
             // Change main button icon to capture
             MainActivity.mMainButton.setImageResource(R.drawable.capture2);
+
+            if (isFlashOn)
+                camera.getCameraControl().enableTorch(true);
         }
     }
 
@@ -2450,7 +2483,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                                 }
                             }
 
-                            Model model = new Model(mIMainActivity.getUserID(), uri.toString(), topLables[2], descr, isEdible);
+                            Model model = new Model(mIMainActivity.getUserID(), uri.toString(), topLables[2], descr, isEdible, getCurrentDate());
                             String uploadId = mDatabaseRef.push().getKey();
                             mDatabaseRef.child(mIMainActivity.getUserID()).child(uploadId).setValue(model);
 
@@ -2467,7 +2500,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     mIMainActivity.showProgressDialog(false);
-                    showSnackBar("Upload Failled.", Snackbar.LENGTH_SHORT);
+                    showSnackBar("Upload Failed.", Snackbar.LENGTH_SHORT);
                 }
             });
         } else {

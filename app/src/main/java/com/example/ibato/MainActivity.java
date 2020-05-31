@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements
                     Log.v("FragXX6", f.getTag());
                     Log.v("COMPO", "WOW");
 
+                    mMainButton.setEnabled(true);
                     mMainButton.setOnClickListener(v -> {
                         if (getFragment().getTag() != getString(R.string.fragment_camera2)) {
                             startCamera2();

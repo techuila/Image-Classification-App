@@ -60,7 +60,7 @@ public class Adapter extends BaseAdapter {
         }
 
         /* Declare components */
-        TextView mTitle, mTitleSub, mDescr;
+        TextView mTitle, mTitleSub, mDescr, mDate;
         ImageView mStatus, mImage;
         ProgressBar progressBar;
 
@@ -68,6 +68,7 @@ public class Adapter extends BaseAdapter {
         mTitle = view.findViewById(R.id.title_text);
         mTitleSub = view.findViewById(R.id.title_text_sub);
         mDescr = view.findViewById(R.id.descr_text);
+        mDate = view.findViewById(R.id.date_text);
         mStatus = view.findViewById(R.id.status_img);
         mImage = view.findViewById(R.id.card_background);
         progressBar = view.findViewById(R.id.loading);
@@ -75,6 +76,7 @@ public class Adapter extends BaseAdapter {
         /* Populate data on layout */
         mTitle.setText(models.get(position).getTitle());
         mDescr.setText(models.get(position).getDesc());
+        mDate.setText(models.get(position).getDate());
 
         String subText;
         int statusIcon;
@@ -109,6 +111,7 @@ public class Adapter extends BaseAdapter {
             intent.putExtra("title", models.get(position).getTitle());
             intent.putExtra("title_sub", subText);
             intent.putExtra("descr", models.get(position).getDesc());
+            intent.putExtra("date", models.get(position).getDate());
             intent.putExtra("image", models.get(position).getImage());
             intent.putExtra("key", models.get(position).getKey());
             intent.putExtra("isEdible", models.get(position).getIsEdible());

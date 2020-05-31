@@ -10,17 +10,19 @@ public class Model {
     private String mKey;
     private String userID;
     private String isEdible;
+    private String date;
 
     public Model() {
         //empty constructor needed
     }
 
-    public Model(String userID, String image, String title, String desc, String isEdible) {
+    public Model(String userID, String image, String title, String desc, String isEdible, String date) {
         this.userID = userID;
         this.image = image;
         this.title = title;
         this.desc = desc;
         this.isEdible = isEdible;
+        this.date = date;
     }
 
     public String getUserID() {
@@ -29,6 +31,14 @@ public class Model {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate() {
+        this.date = date;
     }
 
     public String getImage() {

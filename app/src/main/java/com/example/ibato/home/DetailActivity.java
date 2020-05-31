@@ -37,7 +37,7 @@ public class DetailActivity extends AppCompatActivity {
     private String userID;
     private IHomeActivity mIHomeActivity;
     private ProgressBar progressBar;
-    private TextView mTitle, mDescr, mWarning;
+    private TextView mTitle, mDescr, mWarning, mDate;
     private ImageView mImage, mStatus;
     private Button mDelete;
 
@@ -61,6 +61,7 @@ public class DetailActivity extends AppCompatActivity {
         /* ====== Android Components ====== */
         mTitle = (TextView) findViewById(R.id.title_text);
         mDescr = (TextView) findViewById(R.id.descr_text);
+        mDate = (TextView) findViewById(R.id.date_text);
         mWarning = (TextView) findViewById(R.id.title_text_sub);
         mImage = (ImageView) findViewById(R.id.captured_image);
         mStatus = (ImageView) findViewById(R.id.status_img);
@@ -70,6 +71,7 @@ public class DetailActivity extends AppCompatActivity {
         /* ====== Diplay Values ====== */
         mTitle.setText(getIntent().getStringExtra("title"));
         mDescr.setText(getIntent().getStringExtra("descr"));
+        mDate.setText(getIntent().getStringExtra("date"));
         mWarning.setText(getIntent().getStringExtra("title_sub"));
         mStatus.setImageResource(getIntent().getIntExtra("icon", R.drawable.ic_warning_black_24dp));
         loadImage(this, getIntent().getStringExtra("image"), progressBar, mImage);
