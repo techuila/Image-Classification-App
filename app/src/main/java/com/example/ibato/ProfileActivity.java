@@ -265,31 +265,35 @@ public class ProfileActivity extends Fragment implements
                     return;
                 }
 
-                mIMainActivity.showProgressDialog(true);
+                if (isNetworkAvailable(v.getContext())) {
+                    mIMainActivity.showProgressDialog(true);
 
 
-                mAuth.getCurrentUser().updateEmail(mEmail.getText().toString())
-                    .addOnCompleteListener((task) -> {
-                            if (task.isSuccessful()) {
-                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                        .setDisplayName(mName.getText().toString())
-                                        .build();
-                                mAuth.getCurrentUser().updateProfile(profileUpdates);
+                    mAuth.getCurrentUser().updateEmail(mEmail.getText().toString())
+                        .addOnCompleteListener((task) -> {
+                                if (task.isSuccessful()) {
+                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(mName.getText().toString())
+                                            .build();
+                                    mAuth.getCurrentUser().updateProfile(profileUpdates);
 
-                                User user = new User(mName.getText().toString(), mPhone.getText().toString(), mAddress.getText().toString(), null);
-                                mDatabaseRef.setValue(user);
+                                    User user = new User(mName.getText().toString(), mPhone.getText().toString(), mAddress.getText().toString(), null);
+                                    mDatabaseRef.setValue(user);
 
-                                Toast.makeText(v.getContext(), "Profile Successfully Updated!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(v.getContext(), "Profile Successfully Updated!", Toast.LENGTH_SHORT).show();
+                                    mIMainActivity.showProgressDialog(false);
+                                }
+
+                        }).addOnCanceledListener(new OnCanceledListener() {
+                            @Override
+                            public void onCanceled() {
+                                Toast.makeText(v.getContext(), "Profile Update Failed!", Toast.LENGTH_SHORT).show();
                                 mIMainActivity.showProgressDialog(false);
                             }
-
-                    }).addOnCanceledListener(new OnCanceledListener() {
-                        @Override
-                        public void onCanceled() {
-                            Toast.makeText(v.getContext(), "Profile Update Failed!", Toast.LENGTH_SHORT).show();
-                            mIMainActivity.showProgressDialog(false);
-                        }
-                    });
+                        });
+                } else {
+                    Toast.makeText(v.getContext(), "You are offline, please try again later.", Toast.LENGTH_LONG).show();
+                }
 
                 break;
             }

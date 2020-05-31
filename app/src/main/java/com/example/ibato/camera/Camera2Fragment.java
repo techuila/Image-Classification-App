@@ -2461,7 +2461,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                         }
                     });
 
-    //                showSnackBar("Image Is Uploaded.", Snackbar.LENGTH_SHORT);
+                    showSnackBar("Image successfully saved!", Snackbar.LENGTH_SHORT);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
