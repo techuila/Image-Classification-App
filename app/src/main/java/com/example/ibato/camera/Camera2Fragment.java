@@ -2566,7 +2566,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 vegetable = null;
-                if (Integer.parseInt(topConfidence[2].substring(0, topConfidence[2].length() - 1)) < -550) {
+                if (Integer.parseInt(topConfidence[2].substring(0, topConfidence[2].length() - 1)) < -600) {
                     topLables[2] = "Unknown";
                     mStatus.setImageResource(R.drawable.ic_help_outline_black_24dp);
                     mVegName.setText("Unknown");
