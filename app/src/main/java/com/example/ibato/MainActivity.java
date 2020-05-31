@@ -114,7 +114,11 @@ public class MainActivity extends AppCompatActivity implements
                 super.onFragmentResumed(fm, f);
                 Log.v("FragXX6", f.getTag());
 
-                if (f.getTag() != getString(R.string.fragment_camera2)) {
+                if (f.getTag() == "ProfileFragment" || f.getTag() == "AboutFragment" || f.getTag() == "HistoryFragment" ||
+                        f.getTag() == "FeedbackFragment") {
+                    Log.v("FragXX6", f.getTag());
+                    Log.v("COMPO", "WOW");
+
                     mMainButton.setOnClickListener(v -> {
                         if (getFragment().getTag() != getString(R.string.fragment_camera2)) {
                             startCamera2();
@@ -124,7 +128,8 @@ public class MainActivity extends AppCompatActivity implements
 
                 if (f.getTag() == getString(R.string.fragment_camera2)) {
                     mBottomBar.getMenu().getItem(2).setChecked(true);
-                    mMainButton.setImageResource(R.drawable.capture2);
+                    if (!((Camera2Fragment) getFragment()).mIsImageAvailable)
+                        mMainButton.setImageResource(R.drawable.capture2);
 
                     hideKeyboard(MainActivity.this);
                 } else if (f.getTag() == "ProfileFragment") {

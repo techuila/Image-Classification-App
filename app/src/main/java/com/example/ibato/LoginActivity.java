@@ -23,8 +23,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+
+import static com.example.ibato.Utils.Utils.hideKeyboard;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -33,9 +36,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final String TAG = "Login Activity";
     private ImageView appLogo;
     private TextInputEditText emailEditText, passwordEditText;
-    private TextView mForgotPassword;
-    private Button loginBtn, signUpBtn;
+    private TextView mForgotPassword, mForgotPass;
+    private TextInputLayout mPasswordLayout;
+    private Button loginBtn, signUpBtn, mBack;
     private ProgressBar progressBar;
+    private Boolean isForgotPass = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,22 +68,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         appLogo = (ImageView) findViewById(R.id.app_logo);
         emailEditText = (TextInputEditText) findViewById(R.id.email_input);
         passwordEditText = (TextInputEditText) findViewById(R.id.password_input);
+        mPasswordLayout = (TextInputLayout) findViewById(R.id.password);
         loginBtn = (Button) findViewById(R.id.login);
         signUpBtn = (Button) findViewById(R.id.sign_up);
         progressBar = (ProgressBar) findViewById(R.id.loading);
         mForgotPassword = (TextView) findViewById(R.id.forgot_password);
+        mForgotPass = (TextView) findViewById(R.id.forgot_password_txt);
+        mBack = (Button) findViewById(R.id.back);
 
         /* Action Listeners */
         loginBtn.setOnClickListener(this);
         signUpBtn.setOnClickListener(this);
         mForgotPassword.setOnClickListener(this);
+        mBack.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        if (v == loginBtn) handleLogin();
+        if (v == loginBtn) { if (isForgotPass) handleForgotPW(); else handleLogin(); }
         else if (v == signUpBtn) handleSignUp();
-        else if (v == mForgotPassword) handleForgotPW();
+        else if (v == mForgotPassword) hideShowForgotPassword(true);
+        else if (v == mBack) hideShowForgotPassword(false);
     }
 
     private void handleLogin() {
@@ -130,6 +140,32 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         startActivity(new Intent(this, SignUpActivity.class));
     }
 
+    private void hideShowForgotPassword(Boolean isShow) {
+        isForgotPass = isShow;
+        passwordEditText.setText("");
+
+        if (isShow) {
+            mForgotPass.setVisibility(View.VISIBLE);
+            mBack.setVisibility(View.VISIBLE);
+
+            loginBtn.setText("Reset Password");
+
+            mPasswordLayout.setVisibility(View.GONE);
+            signUpBtn.setVisibility(View.GONE);
+            mForgotPassword.setVisibility(View.GONE);
+        } else {
+            emailEditText.setText("");
+            loginBtn.setText("LOGIN");
+
+            mForgotPass.setVisibility(View.GONE);
+            mBack.setVisibility(View.GONE);
+
+            mPasswordLayout.setVisibility(View.VISIBLE);
+            signUpBtn.setVisibility(View.VISIBLE);
+            mForgotPassword.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void handleForgotPW() {
         String email = emailEditText.getText().toString().trim();
 
@@ -154,12 +190,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     if (task.isSuccessful()) {
                         message = "Email successfully sent!";
                         Log.d(TAG, "Email sent.");
+                        hideKeyboard(LoginActivity.this);
+                        hideShowForgotPassword(false);
                     } else {
                         message = "There was an error occurred!";
                         Log.d(TAG, "Email not sent.");
                     }
 
-                    Snackbar snackbar = Snackbar.make(this.findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT);
+                    Snackbar snackbar = Snackbar.make(this.findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG);
                     snackbar.setAnchorView(MainActivity.mMainButton);
                     snackbar.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
                     snackbar.show();

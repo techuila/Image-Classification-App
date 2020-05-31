@@ -2136,7 +2136,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     private boolean flag = false;
     private IMainActivity mIMainActivity;
     private PreviewView previewView;
-    private ImageView mStillShotView;
+    private ImageView mStillShotView, mFocus;
     private Uri mCapturedUri;
 
     /* CARD COMPONENTS */
@@ -2161,6 +2161,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_camera2, container, false);
         previewView = view.findViewById(R.id.view_finder);
         mStillShotView = view.findViewById(R.id.stillshot_imageview);
+        mFocus = view.findViewById(R.id.focus_support);
 
         /* Card Component */
         mCardView = view.findViewById(R.id.classify_card);
@@ -2215,7 +2216,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     @SuppressLint("UnsafeExperimentalUsageError")
     public void startCamera(View view) {
         int aspectRatio = aspectRatio(previewView.getWidth(), previewView.getHeight());
-        Size screen = new Size(previewView.getWidth(), previewView.getHeight());
+        Size resolutionSize = new Size(previewView.getWidth(), previewView.getHeight());
 
         ListenableFuture cameraProviderFuture = ProcessCameraProvider.getInstance(getContext());
 
@@ -2230,6 +2231,24 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                 // Set up the capture use case to allow users to take photos
                 ImageCapture imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                         .setTargetRotation(getActivity().getWindowManager().getDefaultDisplay().getRotation()).build();
+
+                ImageAnalysis imageAnalysis =
+                        new ImageAnalysis.Builder()
+                                .setTargetResolution(resolutionSize)
+                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                                .build();
+
+                imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(getContext()), new ImageAnalysis.Analyzer() {
+                    @Override
+                    public void analyze(@NonNull ImageProxy image) {
+                        if (flag) {
+                            flag = false;
+                            mCardView.setVisibility(View.VISIBLE);
+                            mFocus.setVisibility(View.GONE);
+                        }
+                        image.close();
+                    }
+                });
 
                 MainActivity.mMainButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -2251,6 +2270,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                         ((LifecycleOwner) this),
                         cameraSelector,
                         preview,
+                        imageAnalysis,
                         imageCapture);
 
                 // Connect the preview use case to the previewView
@@ -2262,6 +2282,30 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                 // handle InterruptedException.
             }
         }, ContextCompat.getMainExecutor(getContext()));
+    }
+
+    private Bitmap toBitmap(Image image) {
+        Image.Plane[] planes = image.getPlanes();
+        ByteBuffer yBuffer = planes[0].getBuffer();
+        ByteBuffer uBuffer = planes[1].getBuffer();
+        ByteBuffer vBuffer = planes[2].getBuffer();
+
+        int ySize = yBuffer.remaining();
+        int uSize = uBuffer.remaining();
+        int vSize = vBuffer.remaining();
+
+        byte[] nv21 = new byte[ySize + uSize + vSize];
+        //U and V are swapped
+        yBuffer.get(nv21, 0, ySize);
+        vBuffer.get(nv21, ySize, vSize);
+        uBuffer.get(nv21, ySize + vSize, uSize);
+
+        YuvImage yuvImage = new YuvImage(nv21, ImageFormat.NV21, image.getWidth(), image.getHeight(), null);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        yuvImage.compressToJpeg(new Rect(0, 0, yuvImage.getWidth(), yuvImage.getHeight()), 75, out);
+
+        byte[] imageBytes = out.toByteArray();
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
     public void captureTriggered(ImageCapture imageCapture) {
@@ -2332,6 +2376,9 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
             mStillShotView.setVisibility(View.INVISIBLE);
             mCardView.setVisibility(View.INVISIBLE);
             mClose.setVisibility(View.INVISIBLE);
+            mCardContent.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+            mFocus.setVisibility(View.VISIBLE);
             // Change main button icon to capture
             MainActivity.mMainButton.setImageResource(R.drawable.capture2);
         }
@@ -2478,7 +2525,6 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
     /* TFLITE CLASSIFY */
     private void classify(Bitmap bitmap_orig) {
-
         Log.d(TAG, "DONE CAPTURE!");
         // get current bitmap from imageView
 //        Bitmap bitmap_orig = mBitmap;
