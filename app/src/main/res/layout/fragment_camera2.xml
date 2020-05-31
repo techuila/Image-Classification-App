@@ -1,406 +1,287 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:colorpicker="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/parent_layout"
-    android:background="#000">
+    tools:context=".MainActivity">
 
 
-    <com.example.ibato.camera.ScalingTextureView
-        android:id="@+id/texture"
-        android:layout_width="wrap_content"
+    <androidx.camera.view.PreviewView
+        android:id="@+id/view_finder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/stillshot_imageview"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/close_stillshot_view"
+        android:visibility="invisible"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/x_white_border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_centerInParent="true"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/classify_card"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="130dp"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-    <!-- Menu Button-->
-<!--    <RelativeLayout-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:padding="12dp"-->
-<!--        android:id="@+id/menu_container"-->
-<!--        android:layout_alignParentStart="true"-->
-<!--        android:layout_marginStart="@dimen/stillshot_widget_margin_sides"-->
-<!--        android:layout_marginTop="@dimen/cam_widget_margin_top">-->
+        <RelativeLayout
+            android:id="@+id/card_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:visibility="gone">
 
-<!--        <ImageView-->
-<!--            android:layout_width="20dp"-->
-<!--            android:layout_height="20dp"-->
-<!--            android:src="@drawable/chevron_selected"-->
-<!--            android:layout_centerInParent="true"/>-->
-<!--    </RelativeLayout>-->
+            <ImageView
+                android:id="@+id/status_img"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_check_black_24dp" />
 
-    <!-- Flash Toggle -->
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="1dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="@dimen/cam_widget_margin_right"
-        android:layout_marginTop="@dimen/cam_widget_margin_top"
-        android:background="@drawable/circle_white"
-        android:id="@+id/flash_container">
+            <TextView
+                android:id="@+id/veg_name_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/status_img"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="6dp"
+                android:text="Carrots"
+                android:textColor="#262626"
+                android:textSize="20sp" />
 
-        <ImageButton
-            android:id="@+id/flash_toggle"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@drawable/cam_circle_selector"
-            android:padding="@dimen/cam_content_inset_secondary"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_flash_off"
-            tools:ignore="ContentDescription"
-            />
+            <TextView
+                android:id="@+id/desc_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/veg_name_txt"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginRight="16dp"
+                android:drawablePadding="10dp"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:text="Description"
+                android:textAlignment="center" />
+        </RelativeLayout>
 
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="1dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="90dp"
-        android:background="#00000000"
-        android:id="@+id/info_container">
-
-        <ImageButton
-            android:id="@+id/info_button"
+        <ProgressBar
+            android:id="@+id/loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:background="@drawable/cam_circle_selector"
-            android:padding="@dimen/cam_content_inset_secondary"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_info"
-            tools:ignore="ContentDescription"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+
             />
 
-    </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+<!--    <ImageButton-->
+<!--        android:id="@+id/imgCapture"-->
+<!--        android:layout_width="72dp"-->
+<!--        android:layout_height="72dp"-->
+<!--        android:layout_margin="24dp"-->
+<!--        app:srcCompat="@android:drawable/ic_menu_camera"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<RelativeLayout-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    xmlns:colorpicker="http://schemas.android.com/apk/res-auto"-->
+<!--    android:id="@+id/parent_layout"-->
+<!--    android:background="#000">-->
 
 
-    <!-- Switch Orientation Button -->
+<!--    <com.example.ibato.camera.ScalingTextureView-->
+<!--        android:id="@+id/texture"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentStart="true"-->
+<!--        android:layout_alignParentTop="true"/>-->
+
+<!--    &lt;!&ndash; Flash Toggle &ndash;&gt;-->
 <!--    <RelativeLayout-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->
 <!--        android:padding="1dp"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_marginStart="20dp"-->
-<!--        android:layout_marginBottom="35dp"-->
-<!--        android:id="@+id/switch_orientation_container"-->
-<!--        android:layout_toEndOf="@+id/capture_button_container">-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_marginEnd="@dimen/cam_widget_margin_right"-->
+<!--        android:layout_marginTop="@dimen/cam_widget_margin_top"-->
+<!--        android:background="@drawable/circle_white"-->
+<!--        android:id="@+id/flash_container">-->
 
-<!--        <RelativeLayout-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:padding="1dp"-->
-<!--            android:background="@drawable/circle_white"-->
-<!--            >-->
-
-<!--            <ImageButton-->
-<!--                android:id="@+id/switch_orientation"-->
-<!--                android:layout_width="44dp"-->
-<!--                android:layout_height="44dp"-->
-<!--                android:layout_centerInParent="true"-->
-<!--                android:background="@drawable/cam_grey_circle_selector"-->
-<!--                android:padding="@dimen/cam_content_inset_secondary"-->
-<!--                android:scaleType="fitXY"-->
-<!--                android:src="@drawable/ic_switch_camera_orient"-->
-<!--                tools:ignore="ContentDescription"-->
-<!--                />-->
-
-<!--        </RelativeLayout>-->
+<!--        <ImageButton-->
+<!--            android:id="@+id/flash_toggle"-->
+<!--            android:layout_width="44dp"-->
+<!--            android:layout_height="44dp"-->
+<!--            android:background="@drawable/cam_circle_selector"-->
+<!--            android:padding="@dimen/cam_content_inset_secondary"-->
+<!--            android:scaleType="fitXY"-->
+<!--            android:src="@drawable/ic_flash_off"-->
+<!--            tools:ignore="ContentDescription"-->
+<!--            />-->
 
 <!--    </RelativeLayout>-->
 
-
-    <!-- Capture Stillshot Button -->
 <!--    <RelativeLayout-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_marginBottom="@dimen/cam_widget_margin_bottom"-->
-<!--        android:padding="@dimen/cam_content_inset_primary"-->
-<!--        android:background="@drawable/circle_opaque"-->
-<!--        android:id="@+id/capture_button_container">-->
+<!--        android:padding="1dp"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_marginEnd="10dp"-->
+<!--        android:layout_marginTop="90dp"-->
+<!--        android:background="#00000000"-->
+<!--        android:id="@+id/info_container">-->
 
-<!--        <RelativeLayout-->
+<!--        <ImageButton-->
+<!--            android:id="@+id/info_button"-->
 <!--            android:layout_width="wrap_content"-->
 <!--            android:layout_height="wrap_content"-->
-<!--            android:padding="1dp"-->
-<!--            android:background="@drawable/circle_white"-->
-<!--            android:layout_centerInParent="true"-->
-<!--            android:id="@+id/capture_button_secondary_container">-->
-
-<!--            <ImageButton-->
-<!--                android:id="@+id/stillshot"-->
-<!--                android:layout_width="60dp"-->
-<!--                android:layout_height="60dp"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:background="@drawable/cam_circle_selector"-->
-<!--                android:padding="@dimen/cam_content_inset_secondary"-->
-<!--                android:scaleType="fitXY"-->
-<!--                tools:ignore="ContentDescription"-->
-<!--                />-->
-
-
-<!--        </RelativeLayout>-->
+<!--            android:adjustViewBounds="true"-->
+<!--            android:background="@drawable/cam_circle_selector"-->
+<!--            android:padding="@dimen/cam_content_inset_secondary"-->
+<!--            android:scaleType="fitXY"-->
+<!--            android:src="@drawable/ic_info"-->
+<!--            tools:ignore="ContentDescription"-->
+<!--            />-->
 
 <!--    </RelativeLayout>-->
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/stillshot_container"
-        android:visibility="visible">
+<!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:id="@+id/stillshot_container"-->
+<!--        android:visibility="visible">-->
 
 
-        <com.example.ibato.camera.DrawableImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/stillshot_imageview"/>
+<!--        <com.example.ibato.camera.DrawableImageView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:id="@+id/stillshot_imageview"/>-->
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:id="@+id/close_stillshot_view"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="@dimen/stillshot_widget_margin_sides"
-            android:layout_marginTop="@dimen/stillshot_widget_margin_top"
-            android:animateLayoutChanges="true">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/x_white_border"
-                android:layout_centerInParent="true"/>
-
-
-        </RelativeLayout>
-
-        <!-- Pen Container -->
 <!--        <RelativeLayout-->
 <!--            android:layout_width="wrap_content"-->
 <!--            android:layout_height="wrap_content"-->
-<!--            android:padding="1dp"-->
-<!--            android:id="@+id/pen_container"-->
-<!--            android:background="@drawable/circle_white"-->
-<!--            android:layout_alignParentRight="true"-->
-<!--            android:layout_alignParentEnd="true"-->
+<!--            android:padding="12dp"-->
+<!--            android:id="@+id/close_stillshot_view"-->
+<!--            android:layout_alignParentStart="true"-->
+<!--            android:layout_marginStart="@dimen/stillshot_widget_margin_sides"-->
 <!--            android:layout_marginTop="@dimen/stillshot_widget_margin_top"-->
-<!--            android:layout_marginRight="@dimen/stillshot_widget_margin_sides"-->
-<!--            android:animateLayoutChanges="true"/>-->
-
-        <!-- Sticker Container -->
-<!--        <RelativeLayout-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:padding="1dp"-->
-<!--            android:id="@+id/sticker_container"-->
-<!--            android:background="@drawable/circle_white"-->
-<!--            android:layout_alignParentRight="true"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_below="@+id/pen_container"-->
-<!--            android:layout_marginTop="@dimen/stillshot_widget_margin_top"-->
-<!--            android:layout_marginRight="@dimen/stillshot_widget_margin_sides"-->
-<!--            android:animateLayoutChanges="true"/>-->
-
-
-        <!-- Undo Button -->
-<!--        <RelativeLayout-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:paddingBottom="10dp"-->
-<!--            android:paddingRight="10dp"-->
-<!--            android:paddingLeft="10dp"-->
-<!--            android:layout_toLeftOf="@+id/pen_container"-->
-<!--            android:layout_alignTop="@+id/pen_container"-->
-<!--            android:layout_marginRight="@dimen/stillshot_widget_spacing"-->
-<!--            android:animateLayoutChanges="true"-->
-<!--            android:id="@+id/undo_container">-->
-
-
-<!--            <RelativeLayout-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:padding="1dp"-->
-<!--                android:background="@drawable/circle_white"-->
-<!--                >-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/undo_icon"-->
-<!--                    android:layout_width="35dp"-->
-<!--                    android:layout_height="35dp"-->
-<!--                    android:background="@drawable/circle_white"-->
-<!--                    android:padding="@dimen/cam_content_inset_secondary"-->
-<!--                    android:scaleType="fitXY"-->
-<!--                    android:src="@drawable/ic_undo_small"-->
-<!--                    tools:ignore="ContentDescription"/>-->
-
-<!--            </RelativeLayout>-->
-
-<!--        </RelativeLayout>-->
-
-<!--        <RelativeLayout-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:id="@+id/color_picker_container"-->
-<!--            android:layout_alignParentRight="true"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_marginTop="@dimen/stillshot_widget_margin_top"-->
-<!--            android:layout_marginRight="@dimen/stillshot_widget_margin_sides"-->
-<!--            android:layout_alignStart="@+id/pen_container"-->
-<!--            android:layout_below="@+id/pen_container"-->
-<!--            android:visibility="visible"-->
 <!--            android:animateLayoutChanges="true">-->
 
-<!--            <com.example.ibato.VerticalSlideColorPicker-->
-<!--                android:id="@+id/color_picker"-->
+<!--            <ImageView-->
 <!--                android:layout_width="20dp"-->
-<!--                android:layout_height="200dp"-->
-<!--                colorpicker:borderColor="@android:color/black"-->
-<!--                colorpicker:borderWidth="2dp"-->
-<!--                colorpicker:colors="@array/rainbow"-->
-<!--                android:layout_centerHorizontal="true"/>-->
+<!--                android:layout_height="20dp"-->
+<!--                android:src="@drawable/x_white_border"-->
+<!--                android:layout_centerInParent="true"/>-->
+
 
 <!--        </RelativeLayout>-->
 
-<!--        <RelativeLayout-->
-<!--            android:layout_width="wrap_content"-->
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:id="@+id/classify_card"-->
+<!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="wrap_content"-->
-<!--            android:padding="1dp"-->
-<!--            android:layout_centerHorizontal="true"-->
 <!--            android:layout_alignParentBottom="true"-->
-<!--            android:layout_marginBottom="@dimen/cam_widget_margin_bottom"-->
-<!--            android:id="@+id/trash_container">-->
+<!--            android:layout_marginBottom="130dp"-->
+<!--            android:layout_marginLeft="22dp"-->
+<!--            android:layout_marginRight="22dp">-->
 
 <!--            <RelativeLayout-->
-<!--                android:layout_width="wrap_content"-->
+<!--                android:id="@+id/card_content"-->
+<!--                android:layout_width="match_parent"-->
 <!--                android:layout_height="wrap_content"-->
-<!--                android:padding="1dp"-->
-<!--                android:background="@drawable/circle_white">-->
+<!--                android:paddingTop="16dp"-->
+<!--                android:visibility="gone"-->
+<!--                android:paddingBottom="16dp">-->
 
-<!--                <ImageButton-->
-<!--                    android:id="@+id/trash"-->
-<!--                    android:layout_width="44dp"-->
-<!--                    android:layout_height="44dp"-->
-<!--                    android:layout_centerInParent="true"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:background="@drawable/cam_grey_circle_selector"-->
-<!--                    android:padding="@dimen/cam_content_inset_secondary"-->
-<!--                    android:scaleType="fitXY"-->
-<!--                    android:src="@drawable/ic_delete_black_24dp"-->
-<!--                    tools:ignore="ContentDescription"-->
-<!--                    />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/status_img"-->
+<!--                    android:layout_width="40dp"-->
+<!--                    android:layout_height="40dp"-->
+<!--                    android:layout_alignParentTop="true"-->
+<!--                    android:layout_centerHorizontal="true"-->
+<!--                    android:src="@drawable/ic_check_black_24dp"-->
+<!--                    android:layout_centerInParent="true"/>-->
 
+<!--                <TextView-->
+<!--                    android:id="@+id/veg_name_txt"-->
+<!--                    android:textColor="#262626"-->
+<!--                    android:text="Carrots"-->
+<!--                    android:textSize="20sp"-->
+<!--                    android:layout_marginTop="6dp"-->
+<!--                    android:layout_below="@id/status_img"-->
+<!--                    android:layout_centerHorizontal="true"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content" />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/desc_txt"-->
+<!--                    android:layout_below="@id/veg_name_txt"-->
+<!--                    android:layout_marginTop="3dp"-->
+<!--                    android:layout_marginLeft="16dp"-->
+<!--                    android:layout_marginRight="16dp"-->
+<!--                    android:maxLines="3"-->
+<!--                    android:drawablePadding="10dp"-->
+<!--                    android:ellipsize="end"-->
+<!--                    android:text="Description"-->
+<!--                    android:textAlignment="center"-->
+<!--                    android:layout_centerHorizontal="true"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content" />-->
 <!--            </RelativeLayout>-->
 
-<!--        </RelativeLayout>-->
-
-
-<!--        <RelativeLayout-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:padding="@dimen/cam_content_inset_primary"-->
-<!--            android:layout_alignParentBottom="true"-->
-<!--            android:layout_centerHorizontal="true"-->
-<!--            android:layout_marginBottom="@dimen/cam_widget_margin_bottom"-->
-<!--            android:background="@drawable/circle_opaque"-->
-<!--            android:id="@+id/save_container">-->
-
-<!--            <RelativeLayout-->
+<!--            <ProgressBar-->
+<!--                android:id="@+id/loading"-->
 <!--                android:layout_width="wrap_content"-->
 <!--                android:layout_height="wrap_content"-->
-<!--                android:padding="1dp"-->
-<!--                android:background="@drawable/circle_white">-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_marginTop="15dp"-->
+<!--                android:layout_marginBottom="15dp"-->
 
-<!--                <ImageButton-->
-<!--                    android:id="@+id/save_stillshot"-->
-<!--                    android:layout_width="60dp"-->
-<!--                    android:layout_height="60dp"-->
-<!--                    android:layout_centerInParent="true"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:background="@drawable/cam_grey_circle_selector"-->
-<!--                    android:padding="@dimen/cam_content_inset_secondary"-->
-<!--                    android:scaleType="fitXY"-->
-<!--                    android:src="@drawable/ic_save_small"-->
-<!--                    tools:ignore="ContentDescription"-->
-<!--                    />-->
+<!--                />-->
 
-<!--            </RelativeLayout>-->
+<!--        </androidx.cardview.widget.CardView>-->
 
-<!--        </RelativeLayout>-->
+<!--    </RelativeLayout>-->
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/classify_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="130dp"
-            android:layout_marginLeft="22dp"
-            android:layout_marginRight="22dp">
-
-            <RelativeLayout
-                android:id="@+id/card_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="16dp"
-                android:visibility="gone"
-                android:paddingBottom="16dp">
-
-                <ImageView
-                    android:id="@+id/status_img"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:src="@drawable/ic_check_black_24dp"
-                    android:layout_centerInParent="true"/>
-
-                <TextView
-                    android:id="@+id/veg_name_txt"
-                    android:textColor="#262626"
-                    android:text="Carrots"
-                    android:textSize="20sp"
-                    android:layout_marginTop="6dp"
-                    android:layout_below="@id/status_img"
-                    android:layout_centerHorizontal="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/desc_txt"
-                    android:layout_below="@id/veg_name_txt"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:maxLines="3"
-                    android:drawablePadding="10dp"
-                    android:ellipsize="end"
-                    android:text="Description"
-                    android:textAlignment="center"
-                    android:layout_centerHorizontal="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </RelativeLayout>
-
-            <ProgressBar
-                android:id="@+id/loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp"
-
-                />
-
-        </androidx.cardview.widget.CardView>
-
-    </RelativeLayout>
-
-</RelativeLayout>
+<!--</RelativeLayout>-->

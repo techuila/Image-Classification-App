@@ -114,6 +114,14 @@ public class MainActivity extends AppCompatActivity implements
                 super.onFragmentResumed(fm, f);
                 Log.v("FragXX6", f.getTag());
 
+                if (f.getTag() != getString(R.string.fragment_camera2)) {
+                    mMainButton.setOnClickListener(v -> {
+                        if (getFragment().getTag() != getString(R.string.fragment_camera2)) {
+                            startCamera2();
+                        }
+                    });
+                }
+
                 if (f.getTag() == getString(R.string.fragment_camera2)) {
                     mBottomBar.getMenu().getItem(2).setChecked(true);
                     mMainButton.setImageResource(R.drawable.capture2);
@@ -142,16 +150,6 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         }, true);
-        mMainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getFragment().getTag() == getString(R.string.fragment_camera2)) {
-                    ((Camera2Fragment) getFragment()).captureTriggered();
-                } else {
-                    startCamera2();
-                }
-            }
-        });
 
         init();
     }
@@ -165,17 +163,17 @@ public class MainActivity extends AppCompatActivity implements
 
     private void init(){
         if(mPermissions){
-            if(checkCameraHardware(this)){
+//            if(checkCameraHardware(this)){
 
                 // Open the Camera
 //                startCamera2();
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.camera_container, HomeActivity.newInstance(), "HistoryFragment");
                 fragmentTransaction.commit();
-            }
-            else{
-                showSnackBar("You need a camera to use this application", Snackbar.LENGTH_INDEFINITE);
-            }
+//            }
+//            else{
+//                showSnackBar("You need a camera to use this application", Snackbar.LENGTH_INDEFINITE);
+//            }
         }
         else{
             verifyPermissions();
@@ -184,13 +182,14 @@ public class MainActivity extends AppCompatActivity implements
 
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
-            return false;
-        }
+//        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+//            // this device has a camera
+//            return true;
+//        } else {
+//            // no camera on this device
+//            return false;
+//        }
+        return false;
     }
 
     public void verifyPermissions(){
@@ -344,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onBackPressed() {
         Camera2Fragment myFragment = (Camera2Fragment)getSupportFragmentManager().findFragmentByTag(getString(R.string.fragment_camera2));
         if (myFragment != null && myFragment.isVisible() && ((Camera2Fragment) getFragment()).mIsImageAvailable) {
-            ((Camera2Fragment) getFragment()).hideStillshotContainer();
+            ((Camera2Fragment) getFragment()).hideShowPreview(null);
         } else {
             super.onBackPressed();
         }
