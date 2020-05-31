@@ -75,19 +75,28 @@ public class Adapter extends BaseAdapter {
         /* Populate data on layout */
         mTitle.setText(models.get(position).getTitle());
         mDescr.setText(models.get(position).getDesc());
-        mTitleSub.setText("");
+
+        String subText;
         int statusIcon;
         if (models.get(position).getIsEdible().equals("Can")) {
+            subText = "(Can Consume)";
             statusIcon = R.drawable.ic_check_black_24dp;
         } else if (models.get(position).getIsEdible().equals("Cannot")) {
-            if (models.get(position).getTitle().equals("Unknown"))
+            if (models.get(position).getTitle().equals("Unknown")) {
+                subText = "";
                 statusIcon = R.drawable.ic_help_outline_black_24dp;
-            else
-            statusIcon = R.drawable.ic_close_black_24dp;
+            }
+            else {
+                subText = "(Can't Consume)";
+                statusIcon = R.drawable.ic_close_black_24dp;
+            }
         } else {
-            mTitleSub.setText("(Avoid or Limit)");
+            subText = "(Can't Consume)";
             statusIcon = R.drawable.ic_warning_black_24dp;
         }
+
+        mTitleSub.setText(subText);
+
 
         //Loading image using Picasso
         mStatus.setImageResource(statusIcon);
@@ -98,6 +107,7 @@ public class Adapter extends BaseAdapter {
         view.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
             intent.putExtra("title", models.get(position).getTitle());
+            intent.putExtra("title_sub", subText);
             intent.putExtra("descr", models.get(position).getDesc());
             intent.putExtra("image", models.get(position).getImage());
             intent.putExtra("key", models.get(position).getKey());

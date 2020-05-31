@@ -41,7 +41,6 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/classify_card"
-        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -50,7 +49,8 @@
         android:layout_marginRight="22dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible" >
 
         <RelativeLayout
             android:id="@+id/card_content"
@@ -81,10 +81,26 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/desc_txt"
+                android:id="@+id/title_text_sub"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/veg_name_txt"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginRight="16dp"
+                android:drawablePadding="10dp"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:text="Text_sub"
+                android:textColor="#262626"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/desc_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/title_text_sub"
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="3dp"

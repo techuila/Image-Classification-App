@@ -70,13 +70,9 @@ public class DetailActivity extends AppCompatActivity {
         /* ====== Diplay Values ====== */
         mTitle.setText(getIntent().getStringExtra("title"));
         mDescr.setText(getIntent().getStringExtra("descr"));
+        mWarning.setText(getIntent().getStringExtra("title_sub"));
         mStatus.setImageResource(getIntent().getIntExtra("icon", R.drawable.ic_warning_black_24dp));
         loadImage(this, getIntent().getStringExtra("image"), progressBar, mImage);
-        if (getIntent().getStringExtra("isEdible").equals("Limit")) {
-            mWarning.setVisibility(View.VISIBLE);
-        } else {
-            mWarning.setVisibility(View.GONE);
-        }
 
         /* ====== Add Listener ====== */
         mDelete.setOnClickListener(v -> {

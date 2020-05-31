@@ -64,10 +64,9 @@
             android:layout_marginStart="6dp"
             android:layout_marginBottom="2.5dp"
             android:textColor="@color/black"
-            android:text="(Avoid or Limit)"
+            android:text=""
             android:textSize="12sp"
             android:textStyle="bold"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/title_text"
             app:layout_constraintStart_toEndOf="@+id/title_text" />
 

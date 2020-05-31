@@ -2142,10 +2142,9 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     /* CARD COMPONENTS */
     private RelativeLayout mCardContent;
     private CardView mCardView;
-    private TextView mVegName, mDescr;
+    private TextView mVegName, mTextSub, mDescr;
     private ProgressBar progressBar;
-    private ImageView mStatus;
-    private ImageView mClose;
+    private ImageView mStatus, mClose;
 
     /* FIREBASE VARIABLES */
     private StorageReference mStorageRef;
@@ -2167,6 +2166,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         mCardView = view.findViewById(R.id.classify_card);
         mVegName = view.findViewById(R.id.veg_name_txt);
         mDescr = view.findViewById(R.id.desc_txt);
+        mTextSub = view.findViewById(R.id.title_text_sub);
         mStatus = view.findViewById(R.id.status_img);
         mCardContent = view.findViewById(R.id.card_content);
         progressBar = view.findViewById(R.id.loading);
@@ -2520,10 +2520,11 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 vegetable = null;
-                if (Integer.parseInt(topConfidence[2].substring(0, topConfidence[2].length() - 1)) < -1000) {
+                if (Integer.parseInt(topConfidence[2].substring(0, topConfidence[2].length() - 1)) < -400) {
                     topLables[2] = "Unknown";
                     mStatus.setImageResource(R.drawable.ic_help_outline_black_24dp);
                     mVegName.setText("Unknown");
+                    mTextSub.setVisibility(View.GONE);
                     mDescr.setText("Subject was not found on the vegetable list, please take a photo again");
                     mDescr.setVisibility(View.VISIBLE);
                 } else {
@@ -2535,16 +2536,24 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
                         if (vegetable.getIsLimit()) {
                             mStatus.setImageResource(R.drawable.ic_warning_black_24dp);
+                            mTextSub.setText("(Can't Consume)");
                         } else {
                             mStatus.setImageResource(R.drawable.ic_check_black_24dp);
+                            mTextSub.setText("(Can Consume)");
                         }
 
                         mDescr.setText(vegetable.getDescr());
                         mDescr.setVisibility(View.VISIBLE);
+
+                        mTextSub.setVisibility(View.VISIBLE);
+
                         isEdible = true;
                     } else {
                         mStatus.setImageResource(R.drawable.ic_close_black_24dp);
                         mDescr.setVisibility(View.INVISIBLE);
+
+                        mTextSub.setText("(Can't Consume)");
+                        mTextSub.setVisibility(View.VISIBLE);
                         isEdible = false;
                     }
                 }
