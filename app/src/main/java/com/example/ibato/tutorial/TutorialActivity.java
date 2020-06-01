@@ -47,7 +47,7 @@ public class TutorialActivity extends AppCompatActivity {
         // When this activity is about to be launch we need to check if its open before or not
         if (restorePrefData() && !getIntent().getBooleanExtra("IS_INFO_CLICKED", Boolean.FALSE)) {
 
-            Intent mainActivity = new Intent(getApplicationContext(), MainActivity.class );
+            Intent mainActivity = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(mainActivity);
             finish();
 
@@ -65,8 +65,8 @@ public class TutorialActivity extends AppCompatActivity {
         // Fill list screen
         final List<ScreenItem> mList = new ArrayList<>();
         mList.add(new ScreenItem("Welcome to iBato","An app that helps hemodialysis patients recognize their Vegetable Dietary Restriction with a single click.", R.drawable.logo_outline));
-        mList.add(new ScreenItem("Take a Photo","Point your camera to a fruit/vegetable and capture it.", R.drawable.intro2));
-        mList.add(new ScreenItem("Classify Fruits and  Vegetables","Displays result based from the photo that you've taken.", R.drawable.intro3));
+        mList.add(new ScreenItem("Take a Photo","Point your camera to a vegetable and capture it.", R.drawable.intro2));
+        mList.add(new ScreenItem("Classify Vegetables","Displays result based from the photo that you've taken.", R.drawable.intro3));
 
         // setup viewpager
         viewPager = findViewById(R.id.screen_viewpager);

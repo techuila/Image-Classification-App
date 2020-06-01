@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ibato.models.User;
+import com.example.ibato.tutorial.TutorialActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -172,7 +173,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             });
 
                     finish();
-                    startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                    Intent intent = new Intent(SignUpActivity.this, TutorialActivity.class);
+                    intent.putExtra("IS_INFO_CLICKED", Boolean.TRUE);
+                    startActivity(intent);
                 } else {
 
                     if (task.getException() instanceof FirebaseAuthUserCollisionException) {

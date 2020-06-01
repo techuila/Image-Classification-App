@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -56,7 +57,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if (mAuth.getCurrentUser() != null) {
             finish();
-            switchToNextIntent(false);
+            switchToNextIntent(false, false);
         }
     }
 
@@ -127,7 +128,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
                     finish();
-                    switchToNextIntent(true);
+                    switchToNextIntent(true, task.getResult().getAdditionalUserInfo().isNewUser());
                 } else {
                     Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -206,15 +207,35 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 });
     }
 
-    private void switchToNextIntent(Boolean isLogin) {
+    private void switchToNextIntent(Boolean isLogin, Boolean isFirstTime) {
 
         if (isLogin) {
-            Intent intent = new Intent(LoginActivity.this, TutorialActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+            if (!isFirstTime) {
+                Intent intent = new Intent(LoginActivity.this, TutorialActivity.class);
+                intent.putExtra("IS_INFO_CLICKED", Boolean.TRUE);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
         } else {
-            startActivity(new Intent(LoginActivity.this, TutorialActivity.class));
+
+            // When this activity is about to be launch we need to check if its open before or not
+            if (!restorePrefData()) {
+                Intent mainActivity = new Intent(getApplicationContext(), TutorialActivity.class);
+                startActivity(mainActivity);
+                finish();
+            }
+
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
         }
+    }
+
+    private boolean restorePrefData() {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("myPrefs", MODE_PRIVATE);
+        Boolean isIntroActivityOpnendBefore = pref.getBoolean("isIntroOpnend",false);
+        return  isIntroActivityOpnendBefore;
     }
 
     private void loginAnimation() {
