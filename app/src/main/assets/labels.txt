@@ -1,5 +1,6 @@
 Ampalaya
 Apple
+Asparagus
 Avocado
 Banana
 Bell Pepper
@@ -10,10 +11,11 @@ Carrots
 Cauliflower
 Celery
 Chili Pepper
-Cocount
+Coconut
 Corn
 Cucumber
 Durian
+Egg
 Eggplant
 Garlic
 Ginger
@@ -24,7 +26,6 @@ Lemon
 Lettuce
 Malunggay
 Mango
-Mangosteen
 Mushroom
 Okra
 Onion
