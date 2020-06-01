@@ -38,7 +38,7 @@
        app:layout_constraintTop_toTopOf="parent"
        />
 
-        <!-- Flash Toggle -->
+    <!-- Flash Toggle -->
     <RelativeLayout
         android:id="@+id/flash_container"
         android:layout_width="wrap_content"
@@ -58,7 +58,30 @@
             android:background="@drawable/cam_circle_selector"
             android:padding="@dimen/cam_content_inset_secondary"
             android:scaleType="fitXY"
-            android:src="@drawable/ic_flash_on"
+            android:src="@drawable/ic_flash_off"
+            tools:ignore="ContentDescription" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/info_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="1dp"
+        android:layout_alignParentEnd="true"
+        android:background="#00000000"
+        app:layout_constraintTop_toBottomOf="@+id/flash_container"
+        app:layout_constraintEnd_toEndOf="@+id/flash_container">
+
+        <ImageButton
+            android:id="@+id/info_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="@drawable/cam_circle_selector"
+            android:padding="@dimen/cam_content_inset_secondary"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_info"
             tools:ignore="ContentDescription" />
 
     </RelativeLayout>

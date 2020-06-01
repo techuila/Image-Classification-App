@@ -2140,9 +2140,9 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     private boolean flag = false;
     private IMainActivity mIMainActivity;
     private PreviewView previewView;
-    private RelativeLayout mFlashContainer;
+    private RelativeLayout mFlashContainer, mInfoContainer;
     private ImageView mStillShotView, mFocus;
-    private ImageButton mFlashIcon;
+    private ImageButton mFlashIcon, mInfoButton;
     private Uri mCapturedUri;
     private Boolean isFlashOn = false;
 
@@ -2170,8 +2170,10 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
         previewView = view.findViewById(R.id.view_finder);
         mStillShotView = view.findViewById(R.id.stillshot_imageview);
         mFlashContainer = view.findViewById(R.id.flash_container);
+        mInfoContainer = view.findViewById(R.id.info_container);
         mFlashIcon = view.findViewById(R.id.flash_toggle);
         mFocus = view.findViewById(R.id.focus_support);
+        mInfoButton = view.findViewById(R.id.info_button);
 
         /* Card Component */
         mCardView = view.findViewById(R.id.classify_card);
@@ -2191,6 +2193,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
 
         /* Add Click Listener */
         mClose.setOnClickListener(this);
+        mInfoButton.setOnClickListener(this);
 
         return view;
     }
@@ -2221,6 +2224,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v == mClose) hideShowPreview(null);
+        else if (v == mInfoButton) mIMainActivity.showTutorial();
     }
 
     @SuppressLint("UnsafeExperimentalUsageError")
@@ -2256,6 +2260,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
                             mCardView.setVisibility(View.VISIBLE);
                             mFocus.setVisibility(View.GONE);
                             mFlashContainer.setVisibility(View.GONE);
+                            mInfoContainer.setVisibility(View.GONE);
                         }
                         image.close();
                     }
@@ -2319,7 +2324,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     }
 
     private void setFlashIcon(Boolean flashState){
-        if (flashState) {
+        if (!flashState) {
             Glide.with(getActivity())
                     .load(R.drawable.ic_flash_off)
                     .into(mFlashIcon);
@@ -2395,6 +2400,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
             mCardView.setVisibility(View.VISIBLE);
             mClose.setVisibility(View.VISIBLE);
             mFlashContainer.setVisibility(View.GONE);
+            mInfoContainer.setVisibility(View.GONE);
             // Change main button icon to save
             MainActivity.mMainButton.setEnabled(true);
             MainActivity.mMainButton.setImageResource(R.drawable.save);
@@ -2407,6 +2413,7 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
             mClose.setVisibility(View.GONE);
             mCardContent.setVisibility(View.GONE);
             mFlashContainer.setVisibility(View.VISIBLE);
+            mInfoContainer.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.VISIBLE);
             mFocus.setVisibility(View.VISIBLE);
             // Change main button icon to capture
