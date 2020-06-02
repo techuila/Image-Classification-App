@@ -2395,7 +2395,9 @@ public class Camera2Fragment extends Fragment implements View.OnClickListener {
     public void hideShowPreview(Bitmap bitmap) {
         if (bitmap != null) {
             // Show Preview
-            mStillShotView.setImageBitmap(bitmap);
+            Glide.with(getActivity())
+                    .load(bitmap)
+                    .into(mStillShotView);
             mStillShotView.setVisibility(View.VISIBLE);
             mCardView.setVisibility(View.VISIBLE);
             mClose.setVisibility(View.VISIBLE);
