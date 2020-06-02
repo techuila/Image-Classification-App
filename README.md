@@ -1,5 +1,5 @@
 # Image Classification App
-iBato Application is an application that can be used by Hemodialysis Patients, the vegetables that the application can only recognize are the vegetables that are only can be found around in Zamboanga City and thus help hemodialysis patients with their Vegetable Dietary Restriction.
+This is an application that can be used by Hemodialysis Patients, the vegetables that the application can only recognize are the vegetables that are only can be found around in Zamboanga City and thus help hemodialysis patients with their Vegetable Dietary Restriction.
 
 
 ## How to use the application
