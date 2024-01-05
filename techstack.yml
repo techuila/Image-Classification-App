@@ -1,7 +1,8 @@
 repo_name: techuila/Image-Classification-App
 report_id: 052654c693a1c8318302011b13357fc4
+version: 0.1
 repo_type: Public
-timestamp: '2023-11-15T06:27:05+00:00'
+timestamp: '2024-01-05T08:40:51+00:00'
 requested_by: techuila
 provider: github
 branch: master
@@ -16,6 +17,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Languages
   image_url: https://img.stackshare.io/service/995/K85ZWV2F.png
+  detection_source_url: https://github.com/techuila/Image-Classification-App
   detection_source: Repo Metadata
 - name: Android SDK
   description: An SDK that provides you the API libraries and developer tools necessary
@@ -27,7 +29,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Frameworks (Full Stack)
   image_url: https://img.stackshare.io/service/1010/m8jf0po4imu8t5eemjdd.png
-  detection_source_url: app/build.gradle
+  detection_source_url: https://github.com/techuila/Image-Classification-App/blob/master/app/build.gradle
   detection_source: app/build.gradle
   last_updated_by: Techuila
   last_updated_on: 2020-03-14 05:08:03.000000000 Z
@@ -39,6 +41,7 @@ tools:
   category: Application Hosting
   sub_category: Realtime Backend / API
   image_url: https://img.stackshare.io/service/116/cZLxNFZS.jpg
+  detection_source_url: https://github.com/techuila/Image-Classification-App/blob/master/app/build.gradle
   detection_source: app/build.gradle
   last_updated_by: Techuila
   last_updated_on: 2020-05-12 15:54:58.000000000 Z
@@ -50,6 +53,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Version Control System
   image_url: https://img.stackshare.io/service/1046/git.png
+  detection_source_url: https://github.com/techuila/Image-Classification-App
   detection_source: Repo Metadata
 - name: Gradle
   description: A powerful build system for the JVM
@@ -60,7 +64,8 @@ tools:
   category: Build, Test, Deploy
   sub_category: Java Build Tools
   image_url: https://img.stackshare.io/service/975/gradlephant-social-black-bg.png
-  detection_source: gradlew.bat
+  detection_source_url: https://github.com/techuila/Image-Classification-App/blob/master/app/build.gradle
+  detection_source: app/build.gradle
   last_updated_by: Techuila
   last_updated_on: 2020-03-14 05:08:03.000000000 Z
 - name: Android OS
@@ -72,7 +77,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Operating Systems
   image_url: https://img.stackshare.io/service/9586/ZvmtaSXW_400x400.jpg
-  detection_source_url: app/build.gradle
+  detection_source_url: https://github.com/techuila/Image-Classification-App/blob/master/app/build.gradle
   detection_source: app/build.gradle
   last_updated_by: Techuila
   last_updated_on: 2020-03-14 05:08:03.000000000 Z
